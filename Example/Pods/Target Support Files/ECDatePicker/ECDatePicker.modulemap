@@ -1,0 +1,6 @@
+framework module ECDatePicker {
+  umbrella header "ECDatePicker-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ECDatePicker'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of ECDatePicker.'
+  s.version          = '1.0.0'
+  s.summary          = 'ECDatePicker是一个轻量级的DatePicker.'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,17 +18,17 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+    ECDatePIcker是一个轻量级的DatePicker,支持时间、日期、时间日期选择.
                        DESC
 
-  s.homepage         = 'https://github.com/<GITHUB_USERNAME>/ECDatePicker'
+  s.homepage         = 'https://github.com/cike534222598/ECDatePicker'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Jame' => 'cike534222598@qq.com' }
-  s.source           = { :git => 'https://github.com/<GITHUB_USERNAME>/ECDatePicker.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/cike534222598/ECDatePicker.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '7.0'
 
   s.source_files = 'ECDatePicker/Classes/**/*'
   
