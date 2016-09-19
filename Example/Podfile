@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'ECDatePicker_Example' do
+  pod 'ECDatePicker', :path => '../'
+
+  target 'ECDatePicker_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
