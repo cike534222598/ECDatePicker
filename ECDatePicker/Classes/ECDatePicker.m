@@ -8,204 +8,1668 @@
 
 #import "ECDatePicker.h"
 
+
+// Constants :
+static NSString  * const kSureButtonItemTitle = @"确定";
+static NSString  * const kCancelButtonItemTitle = @"取消";
+
+// Constants sizes :
+static CGFloat const kECDatePickerHeight = 260.0f;
+
+static CGFloat const kECDatePickerHeaderHeight = 44.0f;
+
+static CGFloat const kECDatePickerButtonHeaderWidth = 40.0f;
+
+static CGFloat const kECDatePickerHeaderBottomMargin = 1.0f;
+
+static CGFloat const kECDatePickerScrollViewDaysWidth = 90.0f;
+
+static CGFloat const kECDatePickerScrollViewMonthWidth = 140.0f;
+
+static CGFloat const kECDatePickerScrollViewDateWidth = 165.0f;
+
+static CGFloat const kECDatePickerScrollViewLeftMargin = 1.0f;
+
+static CGFloat const kECDatePickerScrollViewItemHeight = 45.0f;
+
+static CGFloat const kECDatePickerLineWidth = 2.0f;
+
+static CGFloat const kECDatePickerLineMargin = 15.0f;
+
+static CGFloat const kECDatePickerPadding = 15.0f;
+
+// Constants times :
+static CGFloat const kECDatePickerAnimationDuration = 0.4f;
+
+// Constants fonts
+#define kECDatePickerTitleFont [UIFont systemFontOfSize:18.0]
+#define kECDatePickerLabelFont [UIFont systemFontOfSize:18.0]
+#define kECDatePickerLabelSelectedFont [UIFont systemFontOfSize:20.0];
+
+// Constants colors :
+#define kECDatePickerTintColor [UIColor colorWithRed:153.0/255.0 green:153.0/255.0 blue:153.0/255.0 alpha:1.0]
+#define kECDatePickerHighlightColor [UIColor colorWithRed:153.0/255.0 green:153.0/255.0 blue:153.0/255.0 alpha:1.0]
+#define kECDatePickerBackgroundColor [UIColor colorWithRed:244/255.0 green:242/255.0 blue:248/255.0 alpha:1.0]
+#define kECDatePickerScrolViewBackgroundColor [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:1.0]
+#define kECDatePickerTitleFontColor kECDatePickerTintColor
+#define kECDatePickerFontColorLabel kECDatePickerTintColor
+#define kECDatePickerFontColorLabelSelected kECDatePickerHighlightColor
+#define kECDatePickerBackgroundColorLines kECDatePickerHighlightColor
+
+typedef NS_ENUM(NSInteger,ScrollViewTagValue) {
+    ScrollViewTagValue_DAYS = 1,
+    ScrollViewTagValue_MONTHS = 2,
+    ScrollViewTagValue_YEARS = 3,
+    ScrollViewTagValue_HOURS = 4,
+    ScrollViewTagValue_MINUTES = 5,
+    ScrollViewTagValue_SECONDS = 6,
+    ScrollViewTagValue_DATES = 7,
+    
+};
+
+
+@interface ECDatePicker () <UIScrollViewDelegate>
+{
+    // Lines :
+    UIView *_lineDaysTop, *_lineDaysBottom, *_lineMonthsTop, *_lineMonthsBottom, *_lineYearsTop,*_lineYearsBottom, *_lineDatesTop, *_lineDatesBottom, *_lineHoursTop, *_lineHoursBottom, *_lineMinutesTop, *_lineMinutesBottom, *_lineSecondsTop, *_lineSecondsBottom;
+    
+    // Labels :
+    NSMutableArray *_labelsDays, *_labelsMonths, *_labelsYears, *_labelsDates, *_labelsHours, *_labelsMinutes, *_labelsSeconds;
+    
+    // Date and time selected :
+    NSInteger _selectedDay,  _selectedMonth, _selectedYear,  _selectedDate, _selectedHour, _selectedMinute,  _selectedSecond;
+    
+    // First init flag :
+    BOOL _isInitialized;
+    NSInteger _minYear;
+    
+}
+
+// Data of years, months, days, dates, hours, minutes, seconds
+@property (nonatomic, strong) NSMutableArray *years, *months, *days, *dates, *hours, *minutes, *seconds;
+
+// ScrollView for Years, Months, days ,Dates ,Hours ,Minute ,Seconds
+@property (nonatomic, strong) UIScrollView *scrollViewYears, *scrollViewMonths, *scrollViewDays, *scrollViewDates, *scrollViewHours, *scrollViewMinutes,*scrollViewSeconds;
+
+@property (nonatomic, weak) UIView *superView;
+
+@property (nonatomic, copy) UIView *dimBackgroundView;
+
+@property (nonatomic, strong) UILabel *titleLabel;
+
+@property (nonatomic, strong) UIView *headerView;
+
+@property (nonatomic, strong) UIColor *tintColor;
+
+@property (nonatomic, strong) UIColor *highlightColor;
+
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
+
+@end
+
+
 @implementation ECDatePicker
 
 
-#pragma mark ------INIT------
--(id)initWithView:(UIView *)view delegate:(id<ECDatePickerDelegate>)delegate backColor:(UIColor *)backgroundColor buttonTitleColor:(UIColor *)titleColor pickerStyle:(ECDatePickerStyle)style
-{
-    if (self = [super init]) {
-        
-        _baseView = view;
-        _delegate = delegate;
-        _isBeforeTime = YES;
-        
-        _maskView = [[UIView alloc] initWithFrame:_baseView.frame];
-        _maskView.backgroundColor = [UIColor blackColor];
-        _maskView.alpha = 0;
-        [_maskView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(popDatePicker)]];
-        [_baseView addSubview:_maskView];
-        
-        
-        _datePickerView = [[UIView alloc] initWithFrame:CGRectMake(0,[UIScreen mainScreen].bounds.size.height,[UIScreen mainScreen].bounds.size.width,256)];
-        _datePickerView.backgroundColor = backgroundColor;
-        [_baseView addSubview:_datePickerView];
-        
-        
-        _datePicker = [[UIDatePicker alloc]init];
-        _datePicker.frame = CGRectMake(0,40,_datePickerView.frame.size.width,216);
-        _datePicker.date = [NSDate date];
-        _datePicker.backgroundColor = [UIColor whiteColor];
-        self.theTypeOfDatePicker = style;
-        [_datePickerView addSubview:_datePicker];
+#pragma mark - Initializers
 
-        
-        _dateConfirmButton = [[UIButton alloc] initWithFrame:CGRectMake(_datePickerView.frame.size.width/2,0,_datePickerView.frame.size.width/2,40)];
-        [_dateConfirmButton setTitle:@"确定" forState:UIControlStateNormal];
-        _dateConfirmButton.titleLabel.font = [UIFont fontWithName:@"TrebuchetMS-Bold" size:15];
-        _dateConfirmButton.userInteractionEnabled = YES;
-        _dateConfirmButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-        _dateConfirmButton.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 10);
-        [_dateConfirmButton addTarget:self action:@selector(dateConfirmClick) forControlEvents:UIControlEventTouchUpInside];
-        [_dateConfirmButton setTitleColor:titleColor forState:UIControlStateNormal];
-        [_datePickerView addSubview:_dateConfirmButton];
-        
-        
-        _dateCancleButton = [[UIButton alloc] initWithFrame:CGRectMake(0,0,_datePickerView.frame.size.width/2,40)];
-        [_dateCancleButton setTitle:@"取消" forState:UIControlStateNormal];
-        _dateCancleButton.titleLabel.font = [UIFont fontWithName:@"TrebuchetMS-Bold" size:15];
-        _dateCancleButton.userInteractionEnabled = YES;
-        _dateCancleButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-        _dateCancleButton.titleEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
-        [_dateCancleButton addTarget:self action:@selector(popDatePicker) forControlEvents:UIControlEventTouchUpInside];
-        [_dateCancleButton setTitleColor:titleColor forState:UIControlStateNormal];
-        [_datePickerView addSubview:_dateCancleButton];
-    }
+- (instancetype)initWithSuperView:(UIView*)superView {
     
+    
+    if (self = [super initWithFrame:CGRectMake(0.0, superView.frame.size.height, superView.frame.size.width, kECDatePickerHeight)]) {
+        _datePickerMode = ECDatePickerModeDate;
+        [superView addSubview:self];
+        _superView = superView;
+        _minYear = 1900;
+        self.tintColor = kECDatePickerTintColor;
+        self.highlightColor = kECDatePickerHighlightColor;
+        [self addSubview:self.headerView];
+        [self setupControl];
+    }
     return self;
 }
 
+- (instancetype)initDatePickerMode:(ECDatePickerMode)datePickerMode andAddToSuperView:(UIView *)superView {
+    if (self = [super initWithFrame:CGRectMake(0.0, superView.frame.size.height, superView.frame.size.width, kECDatePickerHeight)]) {
+        _datePickerMode = datePickerMode;
+        [superView addSubview:self];
+        _superView = superView;
+        _minYear = 1900;
+        self.tintColor = kECDatePickerTintColor;
+        self.highlightColor = kECDatePickerHighlightColor;
+        [self addSubview:self.headerView];
+        [self setupControl];
+    }
+    return self;
+}
 
-#pragma mark ------ACTION------
-//确定选择
--(void)dateConfirmClick
-{
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    switch (_theTypeOfDatePicker) {
-        case ECTimeStyle:
-        {
-            [formatter setDateFormat:@"HH:mm"];
+- (instancetype)initDatePickerMode:(ECDatePickerMode)datePickerMode minDate:(NSDate *)minimumDate maxMamDate:(NSDate *)maximumDate  andAddToSuperView:(UIView *)superView {
+    if (self = [super initWithFrame:CGRectMake(0.0, superView.frame.size.height, superView.frame.size.width, kECDatePickerHeight)]) {
+        _datePickerMode = datePickerMode;
+        [superView addSubview:self];
+        _superView = superView;
+        _minYear = 1900;
+        if (maximumDate) {
+            _maximumDate = maximumDate;
         }
-            break;
-        case ECDateStyle:
-        {
-            [formatter setDateFormat:@"yyyy-MM-dd"];
-        }
-            break;
-        case ECAllStyle:
-        {
-            [formatter setDateFormat:@"yyyy-MM-dd HH:mm"];
-        }
-            break;
+        if (minimumDate) {
+            _minimumDate = minimumDate;
             
-        default:
-            break;
+            NSDateComponents* componentsMin = [self.calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:_minimumDate];
+            NSInteger yearMin = [componentsMin year];
+            _minYear = yearMin;
+        }
+        self.tintColor = kECDatePickerTintColor;
+        self.highlightColor = kECDatePickerHighlightColor;
+        [self addSubview:self.headerView];
+        [self setupControl];
+    }
+    return self;
+}
+
+- (void)setupControl {
+    
+    // Set parent View :
+    self.hidden = YES;
+    
+    // Clear old selectors
+    [self removeSelectorYears];
+    [self removeSelectorMonths];
+    [self removeSelectorDays];
+    [self removeSelectorHours];
+    [self removeSelectorMinutes];
+    [self removeSelectorSeconds];
+    
+    // Generate collections days, months, years, hours, minutes and seconds :
+    _years = [self getYears];
+    _days = [self getDaysInMonth:[NSDate date]];
+    if (self.datePickerMode == ECDatePickerModeDateAndTime) {
+        _dates = [self getDates];
     }
     
-    NSString *string = [formatter stringFromDate:[_datePicker date]];
-    [self.delegate ECDatePickerDidConfirm:string];
-    [self popDatePicker];
-    _datePicker.date = [NSDate date];
-}
-
-
-
-//是否可选择以前的时间
--(void)setIsBeforeTime:(BOOL)isBeforeTime
-{
-    if (isBeforeTime == NO) {
-        [_datePicker setMinimumDate:[NSDate date]];
-    }
-    else{
-        [_datePicker setMinimumDate:[NSDate dateWithTimeIntervalSince1970:0]];
-    }
-}
-
-
-- (void)pickerViewBeforeTimeWithDate:(NSDate *)date
-{
-    if ([self compareOneDay:date withAnotherDay:[NSDate date]] == -1) {
-        self.isBeforeTime = YES;
-    }
-    [_datePicker setMinimumDate:date];
-}
-
-
-
-- (int)compareOneDay:(NSDate *)oneDay withAnotherDay:(NSDate *)anotherDay
-{
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
-    NSString *oneDayStr = [dateFormatter stringFromDate:oneDay];
-    NSString *anotherDayStr = [dateFormatter stringFromDate:anotherDay];
-    NSDate *dateA = [dateFormatter dateFromString:oneDayStr];
-    NSDate *dateB = [dateFormatter dateFromString:anotherDayStr];
-    NSComparisonResult result = [dateA compare:dateB];
-    NSLog(@"date1 : %@, date2 : %@", oneDay, anotherDay);
-    if (result == NSOrderedDescending) {
-        //NSLog(@"Date1  is in the future");
-        return 1;
-    }
-    else if (result == NSOrderedAscending){
-        //NSLog(@"Date1 is in the past");
-        return -1;
-    }
-    //NSLog(@"Both dates are the same");
-    return 0;
-}
-
-
-
-- (void)setShowDate:(NSDate *)showDate
-{    
-    if (showDate) {
-        _showDate = showDate;
-    }else{
-        _showDate = [NSDate date];
-    }
-    _datePicker.date = _showDate;
-}
-
-
-
-#pragma mark ------TYPE------
--(void)setTheTypeOfDatePicker:(ECDatePickerStyle)theTypeOfDatePicker
-{
-    _theTypeOfDatePicker = theTypeOfDatePicker;
+    // Background :
+    self.backgroundColor = kECDatePickerBackgroundColor;
     
-    if (theTypeOfDatePicker == ECTimeStyle) {
-        //只显示时间
-        _datePicker.datePickerMode = UIDatePickerModeTime;
+    // Date Selectors :
+    if (self.datePickerMode == ECDatePickerModeDate) {
+        [self buildSelectorYearsOffsetX:0.0 andWidth:kECDatePickerScrollViewMonthWidth];
+        [self buildSelectorMonthsOffsetX:(_scrollViewYears.frame.size.width + kECDatePickerScrollViewLeftMargin) andWidth:kECDatePickerScrollViewDaysWidth];
+        [self buildSelectorDaysOffsetX:(_scrollViewMonths.frame.origin.x + _scrollViewMonths.frame.size.width + kECDatePickerScrollViewLeftMargin) andWidth:(self.frame.size.width - (_scrollViewMonths.frame.origin.x + _scrollViewMonths.frame.size.width + kECDatePickerScrollViewLeftMargin))];
     }
-    else if(theTypeOfDatePicker == ECDateStyle){
-        //只显示日期
-        _datePicker.datePickerMode = UIDatePickerModeDate;
+    
+    // Time Selectors :
+    if (self.datePickerMode == ECDatePickerModeTime) {
+        [self buildSelectorHoursOffsetX:0.0 andWidth:((self.frame.size.width / 3.0) - kECDatePickerScrollViewLeftMargin)];
+        [self buildSelectorMinutesOffsetX:(self.frame.size.width / 3.0) andWidth:((self.frame.size.width / 3.0) - kECDatePickerScrollViewLeftMargin)];
+        [self buildSelectorSecondsOffsetX:((self.frame.size.width / 3.0) * 2.0) andWidth:(self.frame.size.width / 3.0)];
     }
-    else if(theTypeOfDatePicker == ECAllStyle){
-        //时间与日期都显示
-        _datePicker.datePickerMode = UIDatePickerModeDateAndTime;
+    
+    // Date & Time Selectors :
+    if (self.datePickerMode == ECDatePickerModeDateAndTime) {
+        [self buildSelectorDatesOffsetX:0.0 andWidth:kECDatePickerScrollViewDateWidth];
+        [self buildSelectorHoursOffsetX:(kECDatePickerScrollViewDateWidth + kECDatePickerScrollViewLeftMargin) andWidth:(((self.frame.size.width - kECDatePickerScrollViewDateWidth) / 2.0) - kECDatePickerScrollViewLeftMargin)];
+        [self buildSelectorMinutesOffsetX:(kECDatePickerScrollViewDateWidth + kECDatePickerScrollViewLeftMargin + ((self.frame.size.width - kECDatePickerScrollViewDateWidth) / 2.0)) andWidth:(((self.frame.size.width - kECDatePickerScrollViewDateWidth) / 2.0) - kECDatePickerScrollViewLeftMargin)];
     }
-    else{
-        NSLog(@"时间类别选择错误");
+    
+    if (self.datePickerMode == ECDatePickerModeYearAndMonth) {
+        [self buildSelectorYearsOffsetX:0.0 andWidth:self.frame.size.width * 0.5];
+        [self buildSelectorMonthsOffsetX:(_scrollViewYears.frame.size.width + kECDatePickerScrollViewLeftMargin) andWidth:self.frame.size.width * 0.5];
+        
     }
+    
+    // Defaut Date selected :
+    [self setDate:[NSDate date] animated:NO];
 }
 
 
-#pragma mark ------PICKERVIEW动画效果------
-//出现
--(void)pushDatePicker
-{
-    [UIView animateWithDuration:0.3 animations:^{
-        _maskView.alpha = 0.3;
-        _datePickerView.frame = CGRectMake(0,_baseView.frame.size.height-256,_baseView.frame.size.width,256);
+#pragma mark - Build Selector Days
+
+- (void)buildSelectorDaysOffsetX:(CGFloat)x andWidth:(CGFloat)width {
+    
+    // ScrollView Days :
+    _scrollViewDays = [[UIScrollView alloc] initWithFrame:CGRectMake(x, kECDatePickerHeaderHeight + kECDatePickerHeaderBottomMargin, width, self.frame.size.height - kECDatePickerHeaderHeight - kECDatePickerHeaderBottomMargin)];
+    _scrollViewDays.tag = ScrollViewTagValue_DAYS;
+    _scrollViewDays.delegate = self;
+    _scrollViewDays.backgroundColor = kECDatePickerScrolViewBackgroundColor;
+    _scrollViewDays.showsHorizontalScrollIndicator = NO;
+    _scrollViewDays.showsVerticalScrollIndicator = NO;
+    [self addSubview:_scrollViewDays];
+    
+    _lineDaysTop = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewDays.frame.origin.x + kECDatePickerLineMargin, _scrollViewDays.frame.origin.y + (_scrollViewDays.frame.size.height / 2) - (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineDaysTop.backgroundColor = self.highlightColor;
+    [self addSubview:_lineDaysTop];
+    
+    _lineDaysBottom = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewDays.frame.origin.x + kECDatePickerLineMargin, _scrollViewDays.frame.origin.y + (_scrollViewDays.frame.size.height / 2) + (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineDaysBottom.backgroundColor = self.highlightColor;
+    [self addSubview:_lineDaysBottom];
+    
+    // Update ScrollView Data
+    [self buildSelectorLabelsDays];
+    
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTapGestureDaysCaptured:)];
+    singleTap.numberOfTapsRequired = 1;
+    singleTap.numberOfTouchesRequired = 1;
+    [_scrollViewDays addGestureRecognizer:singleTap];
+}
+
+- (void)buildSelectorLabelsDays {
+    
+    CGFloat offsetContentScrollView = (_scrollViewYears.frame.size.height - kECDatePickerScrollViewItemHeight) / 2.0;
+    
+    if (_labelsDays && _labelsDays.count > 0) {
+        for (UILabel *label in _labelsDays) {
+            [label removeFromSuperview];
+        }
+    }
+    
+    _labelsDays = [[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < _days.count; i++) {
+        
+        NSString *day = (NSString*)[_days objectAtIndex:i];
+        
+        UILabel *labelDay = [[UILabel alloc] initWithFrame:CGRectMake(0, (i * kECDatePickerScrollViewItemHeight) + offsetContentScrollView, _scrollViewDays.frame.size.width, kECDatePickerScrollViewItemHeight)];
+        labelDay.text = day;
+        labelDay.font = kECDatePickerLabelFont;
+        labelDay.textAlignment = NSTextAlignmentCenter;
+        labelDay.textColor = self.tintColor;
+        labelDay.backgroundColor = [UIColor clearColor];
+        
+        [_labelsDays addObject:labelDay];
+        [_scrollViewDays addSubview:labelDay];
+    }
+    
+    _scrollViewDays.contentSize = CGSizeMake(_scrollViewDays.frame.size.width, (kECDatePickerScrollViewItemHeight * _days.count) + (offsetContentScrollView * 2));
+}
+
+- (void)removeSelectorDays {
+    
+    if (_scrollViewDays) {
+        [_scrollViewDays removeFromSuperview];
+        _scrollViewDays = nil;
+    }
+    if (_lineDaysTop) {
+        [_lineDaysTop removeFromSuperview];
+        _lineDaysTop = nil;
+    }
+    if (_lineDaysBottom) {
+        [_lineDaysBottom removeFromSuperview];
+        _lineDaysBottom = nil;
+    }
+}
+
+#pragma mark - Build Selector Months
+
+- (void)buildSelectorMonthsOffsetX:(CGFloat)x andWidth:(CGFloat)width {
+    
+    // ScrollView Months
+    
+    _scrollViewMonths = [[UIScrollView alloc] initWithFrame:CGRectMake(x, kECDatePickerHeaderHeight + kECDatePickerHeaderBottomMargin, width, self.frame.size.height - kECDatePickerHeaderHeight - kECDatePickerHeaderBottomMargin)];
+    _scrollViewMonths.tag = ScrollViewTagValue_MONTHS;
+    _scrollViewMonths.delegate = self;
+    _scrollViewMonths.backgroundColor = kECDatePickerScrolViewBackgroundColor;
+    _scrollViewMonths.showsHorizontalScrollIndicator = NO;
+    _scrollViewMonths.showsVerticalScrollIndicator = NO;
+    [self addSubview:_scrollViewMonths];
+    
+    _lineMonthsTop = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewMonths.frame.origin.x + kECDatePickerLineMargin, _scrollViewMonths.frame.origin.y + (_scrollViewMonths.frame.size.height / 2) - (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineMonthsTop.backgroundColor = self.highlightColor;
+    [self addSubview:_lineMonthsTop];
+    
+    _lineMonthsBottom = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewMonths.frame.origin.x + kECDatePickerLineMargin, _scrollViewMonths.frame.origin.y + (_scrollViewMonths.frame.size.height / 2) + (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineMonthsBottom.backgroundColor = self.highlightColor;
+    [self addSubview:_lineMonthsBottom];
+    
+    
+    // Update ScrollView Data
+    [self buildSelectorLabelsMonths];
+    
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTapGestureMonthsCaptured:)];
+    singleTap.numberOfTapsRequired = 1;
+    singleTap.numberOfTouchesRequired = 1;
+    [_scrollViewMonths addGestureRecognizer:singleTap];
+}
+
+- (void)buildSelectorLabelsMonths {
+    
+    CGFloat offsetContentScrollView = (_scrollViewYears.frame.size.height - kECDatePickerScrollViewItemHeight) / 2.0;
+    
+    if (_labelsMonths && _labelsMonths.count > 0) {
+        for (UILabel *label in _labelsMonths) {
+            [label removeFromSuperview];
+        }
+    }
+    
+    _labelsMonths = [[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < self.months.count; i++) {
+        
+        NSString *day = (NSString*)[self.months objectAtIndex:i];
+        
+        UILabel *labelDay = [[UILabel alloc] initWithFrame:CGRectMake(0.0, (i * kECDatePickerScrollViewItemHeight) + offsetContentScrollView, _scrollViewMonths.frame.size.width, kECDatePickerScrollViewItemHeight)];
+        labelDay.text = day;
+        labelDay.font = kECDatePickerLabelFont;
+        labelDay.textAlignment = NSTextAlignmentCenter;
+        labelDay.textColor = self.tintColor;
+        labelDay.backgroundColor = [UIColor clearColor];
+        
+        [_labelsMonths addObject:labelDay];
+        [_scrollViewMonths addSubview:labelDay];
+    }
+    
+    _scrollViewMonths.contentSize = CGSizeMake(_scrollViewMonths.frame.size.width, (kECDatePickerScrollViewItemHeight * self.months.count) + (offsetContentScrollView * 2));
+}
+
+- (void)removeSelectorMonths {
+    
+    if (_scrollViewMonths) {
+        [_scrollViewMonths removeFromSuperview];
+        _scrollViewMonths = nil;
+    }
+    if (_lineMonthsTop) {
+        [_lineMonthsTop removeFromSuperview];
+        _lineMonthsTop = nil;
+    }
+    if (_lineMonthsBottom) {
+        [_lineMonthsBottom removeFromSuperview];
+        _lineMonthsBottom = nil;
+    }
+}
+
+#pragma mark - Build Selector Years
+
+- (void)buildSelectorYearsOffsetX:(CGFloat)x andWidth:(CGFloat)width {
+    
+    // ScrollView Years
+    
+    _scrollViewYears = [[UIScrollView alloc] initWithFrame:CGRectMake(x, kECDatePickerHeaderHeight + kECDatePickerHeaderBottomMargin, width, self.frame.size.height - kECDatePickerHeaderHeight - kECDatePickerHeaderBottomMargin)];
+    _scrollViewYears.tag = ScrollViewTagValue_YEARS;
+    _scrollViewYears.delegate = self;
+    _scrollViewYears.backgroundColor = kECDatePickerScrolViewBackgroundColor;
+    _scrollViewYears.showsHorizontalScrollIndicator = NO;
+    _scrollViewYears.showsVerticalScrollIndicator = NO;
+    [self addSubview:_scrollViewYears];
+    
+    _lineYearsTop = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewYears.frame.origin.x + kECDatePickerLineMargin, _scrollViewYears.frame.origin.y + (_scrollViewYears.frame.size.height / 2) - (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineYearsTop.backgroundColor = self.highlightColor;
+    [self addSubview:_lineYearsTop];
+    
+    _lineYearsBottom = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewYears.frame.origin.x + kECDatePickerLineMargin, _scrollViewYears.frame.origin.y + (_scrollViewYears.frame.size.height / 2) + (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineYearsBottom.backgroundColor = self.highlightColor;
+    [self addSubview:_lineYearsBottom];
+    
+    // Update ScrollView Data
+    [self buildSelectorLabelsYears];
+    
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTapGestureYearsCaptured:)];
+    singleTap.numberOfTapsRequired = 1;
+    singleTap.numberOfTouchesRequired = 1;
+    [_scrollViewYears addGestureRecognizer:singleTap];
+}
+
+- (void)buildSelectorLabelsYears {
+    
+    CGFloat offsetContentScrollView = (_scrollViewYears.frame.size.height - kECDatePickerScrollViewItemHeight) / 2.0;
+    
+    if (_labelsYears && _labelsYears.count > 0) {
+        for (UILabel *label in _labelsYears) {
+            [label removeFromSuperview];
+        }
+    }
+    
+    _labelsYears = [[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < _years.count; i++) {
+        
+        NSString *day = (NSString*)[_years objectAtIndex:i];
+        
+        UILabel *labelDay = [[UILabel alloc] initWithFrame:CGRectMake(0.0, (i * kECDatePickerScrollViewItemHeight) + offsetContentScrollView, _scrollViewYears.frame.size.width, kECDatePickerScrollViewItemHeight)];
+        labelDay.text = day;
+        labelDay.font = kECDatePickerLabelFont;
+        labelDay.textAlignment = NSTextAlignmentCenter;
+        labelDay.textColor = self.tintColor;
+        labelDay.backgroundColor = [UIColor clearColor];
+        
+        [_labelsYears addObject:labelDay];
+        [_scrollViewYears addSubview:labelDay];
+    }
+    
+    _scrollViewYears.contentSize = CGSizeMake(_scrollViewYears.frame.size.width, (kECDatePickerScrollViewItemHeight * _years.count) + (offsetContentScrollView * 2));
+}
+
+- (void)removeSelectorYears {
+    
+    if (_scrollViewYears) {
+        [_scrollViewYears removeFromSuperview];
+        _scrollViewYears = nil;
+    }
+    if (_lineYearsTop) {
+        [_lineYearsTop removeFromSuperview];
+        _lineYearsTop = nil;
+    }
+    if (_lineYearsBottom) {
+        [_lineYearsBottom removeFromSuperview];
+        _lineYearsBottom = nil;
+    }
+}
+
+#pragma mark - Build Selector Dates
+
+- (void)buildSelectorDatesOffsetX:(CGFloat)x andWidth:(CGFloat)width {
+    
+    // ScrollView Dates
+    _scrollViewDates = [[UIScrollView alloc] initWithFrame:CGRectMake(x, kECDatePickerHeaderHeight + kECDatePickerHeaderBottomMargin, width, self.frame.size.height - kECDatePickerHeaderHeight - kECDatePickerHeaderBottomMargin)];
+    _scrollViewDates.tag = ScrollViewTagValue_DATES;
+    _scrollViewDates.delegate = self;
+    _scrollViewDates.backgroundColor = kECDatePickerScrolViewBackgroundColor;
+    _scrollViewDates.showsHorizontalScrollIndicator = NO;
+    _scrollViewDates.showsVerticalScrollIndicator = NO;
+    [self addSubview:_scrollViewDates];
+    
+    _lineDatesTop = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewDates.frame.origin.x + kECDatePickerLineMargin, _scrollViewDates.frame.origin.y + (_scrollViewDates.frame.size.height / 2) - (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineDatesTop.backgroundColor = self.highlightColor;
+    [self addSubview:_lineDatesTop];
+    
+    _lineDatesBottom = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewDates.frame.origin.x + kECDatePickerLineMargin, _scrollViewDates.frame.origin.y + (_scrollViewDates.frame.size.height / 2) + (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineDatesBottom.backgroundColor = self.highlightColor;
+    [self addSubview:_lineDatesBottom];
+    
+    // Update ScrollView Data
+    [self buildSelectorLabelsDates];
+    
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTapGestureDatesCaptured:)];
+    singleTap.numberOfTapsRequired = 1;
+    singleTap.numberOfTouchesRequired = 1;
+    [_scrollViewDates addGestureRecognizer:singleTap];
+}
+
+- (void)buildSelectorLabelsDates {
+    
+    CGFloat offsetContentScrollView = (_scrollViewDates.frame.size.height - kECDatePickerScrollViewItemHeight) / 2.0;
+    
+    if (_labelsDates && _labelsDates.count > 0) {
+        for (UILabel *label in _labelsDates) {
+            [label removeFromSuperview];
+        }
+    }
+    
+    _labelsDates = [[NSMutableArray alloc] init];
+    
+    NSDateFormatter *dateFormatter = self.dateFormatter;
+    [dateFormatter setCalendar:self.calendar];
+    [dateFormatter setTimeZone:self.timeZone];
+    [dateFormatter setDateFormat:[NSString stringWithFormat:@"MMMdd%@ EEE", @"日"]];
+    
+    for (int i = 0; i < _dates.count; i++) {
+        
+        NSDate *date = [_dates objectAtIndex:i];
+        
+        NSString *hour = [dateFormatter stringFromDate:date];
+        
+        UILabel *labelDate = [[UILabel alloc] initWithFrame:CGRectMake(0, (i * kECDatePickerScrollViewItemHeight) + offsetContentScrollView, _scrollViewDates.frame.size.width, kECDatePickerScrollViewItemHeight)];
+        labelDate.text = hour;
+        labelDate.font = kECDatePickerLabelFont;
+        labelDate.textAlignment = NSTextAlignmentCenter;
+        labelDate.textColor = self.tintColor;
+        labelDate.backgroundColor = [UIColor clearColor];
+        
+        [_labelsDates addObject:labelDate];
+        [_scrollViewDates addSubview:labelDate];
+    }
+    
+    _scrollViewDates.contentSize = CGSizeMake(_scrollViewDates.frame.size.width, (kECDatePickerScrollViewItemHeight * _dates.count) + (offsetContentScrollView * 2));
+}
+
+- (void)removeSelectorDates {
+    
+    if (_scrollViewDates) {
+        [_scrollViewDates removeFromSuperview];
+        _scrollViewDates = nil;
+    }
+    if (_lineDatesTop) {
+        [_lineDatesTop removeFromSuperview];
+        _lineDatesTop = nil;
+    }
+    if (_lineDatesBottom) {
+        [_lineDatesBottom removeFromSuperview];
+        _lineDatesBottom = nil;
+    }
+}
+
+#pragma mark - Build Selector Hours
+
+- (void)buildSelectorHoursOffsetX:(CGFloat)x andWidth:(CGFloat)width {
+    
+    // ScrollView Hours :
+    _scrollViewHours = [[UIScrollView alloc] initWithFrame:CGRectMake(x, kECDatePickerHeaderHeight + kECDatePickerHeaderBottomMargin, width, self.frame.size.height - kECDatePickerHeaderHeight - kECDatePickerHeaderBottomMargin)];
+    _scrollViewHours.tag = ScrollViewTagValue_HOURS;
+    _scrollViewHours.delegate = self;
+    _scrollViewHours.backgroundColor = kECDatePickerScrolViewBackgroundColor;
+    _scrollViewHours.showsHorizontalScrollIndicator = NO;
+    _scrollViewHours.showsVerticalScrollIndicator = NO;
+    [self addSubview:_scrollViewHours];
+    
+    _lineHoursTop = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewHours.frame.origin.x + kECDatePickerLineMargin, _scrollViewHours.frame.origin.y + (_scrollViewHours.frame.size.height / 2) - (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineHoursTop.backgroundColor = self.highlightColor;
+    [self addSubview:_lineHoursTop];
+    
+    _lineHoursBottom = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewHours.frame.origin.x + kECDatePickerLineMargin, _scrollViewHours.frame.origin.y + (_scrollViewHours.frame.size.height / 2) + (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineHoursBottom.backgroundColor = self.highlightColor;
+    [self addSubview:_lineHoursBottom];
+    
+    // Update ScrollView Data
+    [self buildSelectorLabelsHours];
+    
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTapGestureHoursCaptured:)];
+    singleTap.numberOfTapsRequired = 1;
+    singleTap.numberOfTouchesRequired = 1;
+    [_scrollViewHours addGestureRecognizer:singleTap];
+}
+
+- (void)buildSelectorLabelsHours {
+    
+    CGFloat offsetContentScrollView = (_scrollViewHours.frame.size.height - kECDatePickerScrollViewItemHeight) / 2.0;
+    
+    if (_labelsHours && _labelsHours.count > 0) {
+        for (UILabel *label in _labelsHours) {
+            [label removeFromSuperview];
+        }
+    }
+    
+    _labelsHours = [[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < self.hours.count; i++) {
+        
+        NSString *hour = (NSString*)[self.hours objectAtIndex:i];
+        
+        UILabel *labelHour = [[UILabel alloc] initWithFrame:CGRectMake(0, (i * kECDatePickerScrollViewItemHeight) + offsetContentScrollView, _scrollViewHours.frame.size.width, kECDatePickerScrollViewItemHeight)];
+        labelHour.text = hour;
+        labelHour.font = kECDatePickerLabelFont;
+        labelHour.textAlignment = NSTextAlignmentCenter;
+        labelHour.textColor = self.tintColor;
+        labelHour.backgroundColor = [UIColor clearColor];
+        
+        [_labelsHours addObject:labelHour];
+        [_scrollViewHours addSubview:labelHour];
+    }
+    
+    _scrollViewHours.contentSize = CGSizeMake(_scrollViewHours.frame.size.width, (kECDatePickerScrollViewItemHeight * self.hours.count) + (offsetContentScrollView * 2));
+}
+
+- (void)removeSelectorHours {
+    
+    if (_scrollViewHours) {
+        [_scrollViewHours removeFromSuperview];
+        _scrollViewHours = nil;
+    }
+    if (_lineHoursTop) {
+        [_lineHoursTop removeFromSuperview];
+        _lineHoursTop = nil;
+    }
+    if (_lineHoursBottom) {
+        [_lineHoursBottom removeFromSuperview];
+        _lineHoursBottom = nil;
+    }
+}
+
+#pragma mark - Build Selector Minutes
+
+- (void)buildSelectorMinutesOffsetX:(CGFloat)x andWidth:(CGFloat)width {
+    
+    // ScrollView Minutes :
+    _scrollViewMinutes = [[UIScrollView alloc] initWithFrame:CGRectMake(x, kECDatePickerHeaderHeight + kECDatePickerHeaderBottomMargin, width, self.frame.size.height - kECDatePickerHeaderHeight - kECDatePickerHeaderBottomMargin)];
+    _scrollViewMinutes.tag = ScrollViewTagValue_MINUTES;
+    _scrollViewMinutes.delegate = self;
+    _scrollViewMinutes.backgroundColor = kECDatePickerScrolViewBackgroundColor;
+    _scrollViewMinutes.showsHorizontalScrollIndicator = NO;
+    _scrollViewMinutes.showsVerticalScrollIndicator = NO;
+    [self addSubview:_scrollViewMinutes];
+    
+    _lineMinutesTop = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewMinutes.frame.origin.x + kECDatePickerLineMargin, _scrollViewMinutes.frame.origin.y + (_scrollViewMinutes.frame.size.height / 2) - (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineMinutesTop.backgroundColor = self.highlightColor;
+    [self addSubview:_lineMinutesTop];
+    
+    _lineMinutesBottom = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewMinutes.frame.origin.x + kECDatePickerLineMargin, _scrollViewMinutes.frame.origin.y + (_scrollViewMinutes.frame.size.height / 2) + (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineMinutesBottom.backgroundColor = self.highlightColor;
+    [self addSubview:_lineMinutesBottom];
+    
+    // Update ScrollView Data
+    [self buildSelectorLabelsMinutes];
+    
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTapGestureMinutesCaptured:)];
+    singleTap.numberOfTapsRequired = 1;
+    singleTap.numberOfTouchesRequired = 1;
+    [_scrollViewMinutes addGestureRecognizer:singleTap];
+}
+
+- (void)buildSelectorLabelsMinutes {
+    
+    CGFloat offsetContentScrollView = (_scrollViewMinutes.frame.size.height - kECDatePickerScrollViewItemHeight) / 2.0;
+    
+    if (_labelsMinutes && _labelsMinutes.count > 0) {
+        for (UILabel *label in _labelsMinutes) {
+            [label removeFromSuperview];
+        }
+    }
+    
+    _labelsMinutes = [[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < self.minutes.count; i++) {
+        
+        NSString *minute = (NSString*)[self.minutes objectAtIndex:i];
+        
+        UILabel *labelMinute = [[UILabel alloc] initWithFrame:CGRectMake(0, (i * kECDatePickerScrollViewItemHeight) + offsetContentScrollView, _scrollViewMinutes.frame.size.width, kECDatePickerScrollViewItemHeight)];
+        labelMinute.text = minute;
+        labelMinute.font = kECDatePickerLabelFont;
+        labelMinute.textAlignment = NSTextAlignmentCenter;
+        labelMinute.textColor = self.tintColor;
+        labelMinute.backgroundColor = [UIColor clearColor];
+        
+        [_labelsMinutes addObject:labelMinute];
+        [_scrollViewMinutes addSubview:labelMinute];
+    }
+    
+    _scrollViewMinutes.contentSize = CGSizeMake(_scrollViewMinutes.frame.size.width, (kECDatePickerScrollViewItemHeight * self.minutes.count) + (offsetContentScrollView * 2));
+}
+
+- (void)removeSelectorMinutes {
+    
+    if (_scrollViewMinutes) {
+        [_scrollViewMinutes removeFromSuperview];
+        _scrollViewMinutes = nil;
+    }
+    if (_lineMinutesTop) {
+        [_lineMinutesTop removeFromSuperview];
+        _lineMinutesTop = nil;
+    }
+    if (_lineMinutesBottom) {
+        [_lineMinutesBottom removeFromSuperview];
+        _lineMinutesBottom = nil;
+    }
+}
+
+#pragma mark - Build Selector Seconds
+
+- (void)buildSelectorSecondsOffsetX:(CGFloat)x andWidth:(CGFloat)width {
+    
+    // ScrollView Seconds :
+    _scrollViewSeconds = [[UIScrollView alloc] initWithFrame:CGRectMake(x, kECDatePickerHeaderHeight + kECDatePickerHeaderBottomMargin, width, self.frame.size.height - kECDatePickerHeaderHeight - kECDatePickerHeaderBottomMargin)];
+    _scrollViewSeconds.tag = ScrollViewTagValue_SECONDS;
+    _scrollViewSeconds.delegate = self;
+    _scrollViewSeconds.backgroundColor = kECDatePickerScrolViewBackgroundColor;
+    _scrollViewSeconds.showsHorizontalScrollIndicator = NO;
+    _scrollViewSeconds.showsVerticalScrollIndicator = NO;
+    [self addSubview:_scrollViewSeconds];
+    
+    _lineSecondsTop = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewSeconds.frame.origin.x + kECDatePickerLineMargin, _scrollViewSeconds.frame.origin.y + (_scrollViewSeconds.frame.size.height / 2) - (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineSecondsTop.backgroundColor = self.highlightColor;
+    [self addSubview:_lineSecondsTop];
+    
+    _lineSecondsBottom = [[UIView alloc] initWithFrame:CGRectMake(_scrollViewSeconds.frame.origin.x + kECDatePickerLineMargin, _scrollViewSeconds.frame.origin.y + (_scrollViewSeconds.frame.size.height / 2) + (kECDatePickerScrollViewItemHeight / 2), width - (2 * kECDatePickerLineMargin), kECDatePickerLineWidth)];
+    _lineSecondsBottom.backgroundColor = self.highlightColor;
+    [self addSubview:_lineSecondsBottom];
+    
+    // Update ScrollView Data
+    [self buildSelectorLabelsSeconds];
+    
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTapGestureSecondsCaptured:)];
+    singleTap.numberOfTapsRequired = 1;
+    singleTap.numberOfTouchesRequired = 1;
+    [_scrollViewSeconds addGestureRecognizer:singleTap];
+}
+
+- (void)buildSelectorLabelsSeconds {
+    
+    CGFloat offsetContentScrollView = (_scrollViewSeconds.frame.size.height - kECDatePickerScrollViewItemHeight) / 2.0;
+    
+    if (_labelsSeconds && _labelsSeconds.count > 0) {
+        for (UILabel *label in _labelsSeconds) {
+            [label removeFromSuperview];
+        }
+    }
+    
+    _labelsSeconds = [[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < self.seconds.count; i++) {
+        
+        NSString *second = (NSString*)[self.seconds objectAtIndex:i];
+        
+        UILabel *labelSecond = [[UILabel alloc] initWithFrame:CGRectMake(0, (i * kECDatePickerScrollViewItemHeight) + offsetContentScrollView, _scrollViewSeconds.frame.size.width, kECDatePickerScrollViewItemHeight)];
+        labelSecond.text = second;
+        labelSecond.font = kECDatePickerLabelFont;
+        labelSecond.textAlignment = NSTextAlignmentCenter;
+        labelSecond.textColor = self.tintColor;
+        labelSecond.backgroundColor = [UIColor clearColor];
+        
+        [_labelsSeconds addObject:labelSecond];
+        [_scrollViewSeconds addSubview:labelSecond];
+    }
+    
+    _scrollViewSeconds.contentSize = CGSizeMake(_scrollViewSeconds.frame.size.width, (kECDatePickerScrollViewItemHeight * self.seconds.count) + (offsetContentScrollView * 2));
+}
+
+- (void)removeSelectorSeconds {
+    
+    if (_scrollViewSeconds) {
+        [_scrollViewSeconds removeFromSuperview];
+        _scrollViewSeconds = nil;
+    }
+    if (_lineSecondsTop) {
+        [_lineSecondsTop removeFromSuperview];
+        _lineSecondsTop = nil;
+    }
+    if (_lineSecondsBottom) {
+        [_lineSecondsBottom removeFromSuperview];
+        _lineSecondsBottom = nil;
+    }
+}
+
+#pragma mark - Actions
+
+- (void)actionButtonCancel:(UIButton *)sender {
+    
+    [self dismiss];
+    
+    if ([self.delegate respondsToSelector:@selector(datePicker:didCancel:)]) {
+        [self.delegate datePicker:self didCancel:sender];
+    }
+}
+
+- (void)actionButtonValid:(UIButton *)sender {
+    
+    [self dismiss];
+    
+    if ([self.delegate respondsToSelector:@selector(datePicker:didSelectedDate:)]) {
+        [self.delegate datePicker:self didSelectedDate:[self getDate]];
+    }
+}
+
+#pragma mark - Show and Dismiss
+
+-(void)show {
+    
+    if (!_superView) return;
+    
+    if (self.hidden == YES) {
+        self.hidden = NO;
+    }
+    
+    if (_isInitialized == NO) {
+        self.frame = CGRectMake(self.frame.origin.x, _superView.frame.size.height, self.frame.size.width, self.frame.size.height);
+        _isInitialized = YES;
+    }
+    
+    [self.superView insertSubview:self.dimBackgroundView belowSubview:self];
+    
+    if (self.datePickerMode == ECDatePickerModeDate || self.datePickerMode == ECDatePickerModeDateAndTime) {
+        
+        int indexDays = [self getIndexForScrollViewPosition:_scrollViewDays];
+        [self highlightLabelInArray:_labelsDays atIndex:indexDays];
+        
+        int indexMonths = [self getIndexForScrollViewPosition:_scrollViewMonths];
+        [self highlightLabelInArray:_labelsMonths atIndex:indexMonths];
+        
+        int indexYears = [self getIndexForScrollViewPosition:_scrollViewYears];
+        [self highlightLabelInArray:_labelsYears atIndex:indexYears];
+    }
+    
+    if (self.datePickerMode == ECDatePickerModeTime || self.datePickerMode == ECDatePickerModeDateAndTime) {
+        
+        int indexHours = [self getIndexForScrollViewPosition:_scrollViewHours];
+        [self highlightLabelInArray:_labelsHours atIndex:indexHours];
+        
+        int indexMinutes = [self getIndexForScrollViewPosition:_scrollViewMinutes];
+        [self highlightLabelInArray:_labelsMinutes atIndex:indexMinutes];
+        
+        int indexSeconds = [self getIndexForScrollViewPosition:_scrollViewSeconds];
+        [self highlightLabelInArray:_labelsSeconds atIndex:indexSeconds];
+    }
+    
+    if (self.datePickerMode == ECDatePickerModeYearAndMonth) {
+        int indexMonths = [self getIndexForScrollViewPosition:_scrollViewMonths];
+        [self highlightLabelInArray:_labelsMonths atIndex:indexMonths];
+        
+        int indexYears = [self getIndexForScrollViewPosition:_scrollViewYears];
+        [self highlightLabelInArray:_labelsYears atIndex:indexYears];
+    }
+    
+    [UIView animateWithDuration:kECDatePickerAnimationDuration delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.frame = CGRectMake(self.frame.origin.x, _superView.frame.size.height - kECDatePickerHeight, self.frame.size.width, self.frame.size.height);
+    } completion:^(BOOL finished) {
+        _isOpen = YES;
+        
     }];
 }
 
-
-//消失
--(void)popDatePicker
-{
-    [UIView animateWithDuration:0.3 animations:^{
-        _maskView.alpha = 0;
-        _datePickerView.frame = CGRectMake(0,_baseView.frame.size.height,_baseView.frame.size.width,256);
+-(void)dismiss {
+    
+    if (!_superView) return;
+    [UIView animateWithDuration:kECDatePickerAnimationDuration delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.frame = CGRectMake(self.frame.origin.x, _superView.frame.size.height, self.frame.size.width, self.frame.size.height);
+        self.dimBackgroundView.alpha = 0.0;
+    } completion:^(BOOL finished) {
+        _isOpen = NO;
+        [self.dimBackgroundView removeFromSuperview];
+        self.dimBackgroundView = nil;
     }];
 }
 
+#pragma mark - DatePicker Mode
 
-#pragma mark ------DEALLOC------
--(void)dealloc
-{
-    self.delegate = nil;
+- (void)setDatePickerMode:(ECDatePickerMode)mode {
+    _datePickerMode = mode;
+    [self setupControl];
+}
+
+#pragma mark - Collections
+
+- (NSMutableArray*)getYears {
+    
+    NSMutableArray *years = [[NSMutableArray alloc] init];
+    
+    NSInteger yearMin = 0;
+    
+    if (self.minimumDate) {
+        NSDateComponents* componentsMin = [self.calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:self.minimumDate];
+        yearMin = [componentsMin year];
+    } else {
+        yearMin = _minYear;
+    }
+    
+    NSInteger yearMax = 0;
+    NSDateComponents* componentsMax = nil;
+    
+    if (self.maximumDate) {
+        componentsMax = [self.calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:self.maximumDate];
+        yearMax = [componentsMax year];
+    } else {
+        componentsMax = [self.calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:[NSDate date]];
+        yearMax = [componentsMax year];
+    }
+    
+    for (NSInteger i = yearMin; i <= yearMax; i++) {
+        
+        [years addObject:[NSString stringWithFormat:@"%ld\u5e74", (long)i]];
+    }
+    
+    return years;
+}
+
+- (NSMutableArray*)getDates {
+    NSMutableArray *dates = [[NSMutableArray alloc] init];
+    
+    if (self.minimumDate && self.maximumDate) {
+        NSInteger days = [self.minimumDate daysBetween:self.maximumDate];
+        for (NSInteger i = 0; i < days; i++) {
+            NSDate *date = [self.minimumDate dateByAddingDays:i];
+            if ([date daysBetween: self.maximumDate] >= 0) {
+                [dates addObject:date];
+            }
+        }
+    } else {
+        
+        NSDateComponents* currentComponents = [self.calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:[NSDate date]];
+        NSInteger currentYear = [currentComponents year];
+        
+        NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+        [dateComponents setCalendar:self.calendar];
+        [dateComponents setTimeZone:self.timeZone];
+        [dateComponents setDay:1];
+        [dateComponents setMonth:1];
+        [dateComponents setHour:0];
+        [dateComponents setMinute:0];
+        [dateComponents setSecond:0];
+        [dateComponents setYear:currentYear];
+        
+        NSDateComponents *maxComponents = [[NSDateComponents alloc] init];
+        [maxComponents setCalendar:self.calendar];
+        [maxComponents setTimeZone:self.timeZone];
+        [maxComponents setDay:1];
+        [maxComponents setMonth:1];
+        [maxComponents setHour:0];
+        [maxComponents setMinute:0];
+        [maxComponents setSecond:0];
+        [maxComponents setYear:currentYear + 1];
+        
+        NSDate *yearMin = [dateComponents date];
+        NSDate *yearMax = [maxComponents date];
+        
+        NSInteger timestampMin = [yearMin timeIntervalSince1970];
+        NSInteger timestampMax = [yearMax timeIntervalSince1970];
+        
+        while (timestampMin < timestampMax) {
+            
+            NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestampMin];
+            
+            [dates addObject:date];
+            
+            timestampMin += 1 * 24 * 60 * 60;
+        }
+    }
+    
+    return dates;
+}
+
+- (NSMutableArray*)getDaysInMonth:(NSDate*)date {
+    
+    if (date == nil) date = [NSDate date];
+    
+    NSRange daysRange = [self.calendar rangeOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitMonth forDate:date];
+    
+    NSMutableArray *days = [[NSMutableArray alloc] init];
+    
+    for (int i = 1; i <= daysRange.length; i++) {
+        
+        [days addObject:[NSString stringWithFormat:@"%d%@", i, @"日"]];
+    }
+    
+    return days;
+}
+
+#pragma mark - UIScrollView Delegate
+
+- (void)singleTapGestureDaysCaptured:(UITapGestureRecognizer *)gesture {
+    
+    CGPoint touchPoint = [gesture locationInView:self];
+    CGFloat touchY = touchPoint.y;
+    
+    if (touchY < (_lineDaysTop.frame.origin.y)) {
+        
+        if (_selectedDay > 1) {
+            _selectedDay -= 1;
+            [self setScrollView:_scrollViewDays atIndex:(_selectedDay - 1) animated:YES];
+        }
+        
+    } else if (touchY > (_lineDaysBottom.frame.origin.y)) {
+        
+        if (_selectedDay < _days.count) {
+            _selectedDay += 1;
+            [self setScrollView:_scrollViewDays atIndex:(_selectedDay - 1) animated:YES];
+        }
+    }
+}
+
+- (void)singleTapGestureMonthsCaptured:(UITapGestureRecognizer *)gesture {
+    
+    CGPoint touchPoint = [gesture locationInView:self];
+    CGFloat touchY = touchPoint.y;
+    
+    if (touchY < (_lineMonthsTop.frame.origin.y)) {
+        
+        if (_selectedMonth > 1) {
+            _selectedMonth -= 1;
+            [self setScrollView:_scrollViewMonths atIndex:(_selectedMonth - 1) animated:YES];
+        }
+        
+    } else if (touchY > (_lineMonthsBottom.frame.origin.y)) {
+        
+        if (_selectedMonth < self.months.count) {
+            _selectedMonth += 1;
+            [self setScrollView:_scrollViewMonths atIndex:(_selectedMonth - 1) animated:YES];
+        }
+    }
+}
+
+- (void)singleTapGestureYearsCaptured:(UITapGestureRecognizer *)gesture {
+    
+    CGPoint touchPoint = [gesture locationInView:self];
+    CGFloat touchY = touchPoint.y;
+    
+    NSInteger minYear = _minYear;
+    
+    if (touchY < (_lineYearsTop.frame.origin.y)) {
+        
+        if (_selectedYear > minYear) {
+            _selectedYear -= 1;
+            [self setScrollView:_scrollViewYears atIndex:(_selectedYear - minYear) animated:YES];
+        }
+        
+    } else if (touchY > (_lineYearsBottom.frame.origin.y)) {
+        
+        if (_selectedYear < (_years.count + (minYear - 1))) {
+            _selectedYear += 1;
+            [self setScrollView:_scrollViewYears atIndex:(_selectedYear - minYear) animated:YES];
+        }
+    }
+}
+
+
+- (void)singleTapGestureDatesCaptured:(UITapGestureRecognizer *)gesture {
+    
+    CGPoint touchPoint = [gesture locationInView:self];
+    CGFloat touchY = touchPoint.y;
+    
+    if (touchY < (_lineDatesTop.frame.origin.y)) {
+        
+        if (_selectedDate > 0) {
+            _selectedDate -= 1;
+            [self setScrollView:_scrollViewDates atIndex:_selectedDate animated:YES];
+        }
+        
+    } else if (touchY > (_lineDatesBottom.frame.origin.y)) {
+        
+        if (_selectedDate < _dates.count - 1) {
+            _selectedDate += 1;
+            [self setScrollView:_scrollViewDates atIndex:_selectedDate animated:YES];
+        }
+    }
+}
+
+- (void)singleTapGestureHoursCaptured:(UITapGestureRecognizer *)gesture {
+    
+    CGPoint touchPoint = [gesture locationInView:self];
+    CGFloat touchY = touchPoint.y;
+    
+    if (touchY < (_lineHoursTop.frame.origin.y)) {
+        
+        if (_selectedHour > 0) {
+            _selectedHour -= 1;
+            [self setScrollView:_scrollViewHours atIndex:_selectedHour animated:YES];
+        }
+        
+    } else if (touchY > (_lineHoursBottom.frame.origin.y)) {
+        
+        if (_selectedHour < self.hours.count - 1) {
+            _selectedHour += 1;
+            [self setScrollView:_scrollViewHours atIndex:_selectedHour animated:YES];
+        }
+    }
+}
+
+- (void)singleTapGestureMinutesCaptured:(UITapGestureRecognizer *)gesture {
+    
+    CGPoint touchPoint = [gesture locationInView:self];
+    CGFloat touchY = touchPoint.y;
+    
+    if (touchY < (_lineMinutesTop.frame.origin.y)) {
+        
+        if (_selectedMinute > 0) {
+            _selectedMinute -= 1;
+            [self setScrollView:_scrollViewMinutes atIndex:_selectedMinute animated:YES];
+        }
+        
+    } else if (touchY > (_lineMinutesBottom.frame.origin.y)) {
+        
+        if (_selectedMinute < self.minutes.count - 1) {
+            _selectedMinute += 1;
+            [self setScrollView:_scrollViewMinutes atIndex:_selectedMinute animated:YES];
+        }
+    }
+}
+
+- (void)singleTapGestureSecondsCaptured:(UITapGestureRecognizer *)gesture {
+    
+    CGPoint touchPoint = [gesture locationInView:self];
+    CGFloat touchY = touchPoint.y;
+    
+    if (touchY < (_lineSecondsTop.frame.origin.y)) {
+        
+        if (_selectedSecond > 0) {
+            _selectedSecond -= 1;
+            [self setScrollView:_scrollViewSeconds atIndex:_selectedSecond animated:YES];
+        }
+        
+    } else if (touchY > (_lineSecondsBottom.frame.origin.y)) {
+        
+        if (_selectedSecond < self.seconds.count - 1) {
+            _selectedSecond += 1;
+            [self setScrollView:_scrollViewSeconds atIndex:_selectedSecond animated:YES];
+        }
+    }
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    
+    int index = [self getIndexForScrollViewPosition:scrollView];
+    
+    [self updateSelectedDateAtIndex:index forScrollView:scrollView];
+    
+    if (scrollView.tag == ScrollViewTagValue_DAYS) {
+        [self highlightLabelInArray:_labelsDays atIndex:index];
+    } else if (scrollView.tag == ScrollViewTagValue_MONTHS) {
+        [self highlightLabelInArray:_labelsMonths atIndex:index];
+    } else if (scrollView.tag == ScrollViewTagValue_YEARS) {
+        [self highlightLabelInArray:_labelsYears atIndex:index];
+    } else if (scrollView.tag == ScrollViewTagValue_HOURS) {
+        [self highlightLabelInArray:_labelsHours atIndex:index];
+    } else if (scrollView.tag == ScrollViewTagValue_MINUTES) {
+        [self highlightLabelInArray:_labelsMinutes atIndex:index];
+    } else if (scrollView.tag == ScrollViewTagValue_SECONDS) {
+        [self highlightLabelInArray:_labelsSeconds atIndex:index];
+    } else if (scrollView.tag == ScrollViewTagValue_DATES) {
+        [self highlightLabelInArray:_labelsDates atIndex:index];
+    }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    
+    int index = [self getIndexForScrollViewPosition:scrollView];
+    
+    [self updateSelectedDateAtIndex:index forScrollView:scrollView];
+    
+    [self setScrollView:scrollView atIndex:index animated:YES];
+    
+    NSDate *selectedDate = [self getDate];
+    if (self.datePickerMode != ECDatePickerModeDateAndTime && self.datePickerMode != ECDatePickerModeTime) {
+        if ([selectedDate compare:self.minimumDate] == NSOrderedAscending) {
+            [self setDate:self.minimumDate animated:YES];
+        }
+        
+        if ([selectedDate compare:self.maximumDate] == NSOrderedDescending) {
+            [self setDate:self.maximumDate animated:YES];
+        }
+    }
+    if ([self.delegate respondsToSelector:@selector(datePicker:dateDidChange:)]) {
+        [self.delegate datePicker:self dateDidChange:selectedDate];
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    
+    int index = [self getIndexForScrollViewPosition:scrollView];
+    
+    [self updateSelectedDateAtIndex:index forScrollView:scrollView];
+    
+    [self setScrollView:scrollView atIndex:index animated:YES];
+    
+    NSDate *selectedDate = [self getDate];
+    if (self.datePickerMode != ECDatePickerModeDateAndTime && self.datePickerMode != ECDatePickerModeTime) {
+        if ([selectedDate compare:self.minimumDate] == NSOrderedAscending) {
+            [self setDate:self.minimumDate animated:YES];
+            return;
+        }
+        
+        if ([selectedDate compare:self.maximumDate] == NSOrderedDescending) {
+            [self setDate:self.maximumDate animated:YES];
+            return;
+        }
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(datePicker:dateDidChange:)]) {
+        [self.delegate datePicker:self dateDidChange:selectedDate];
+    }
+}
+
+- (void)updateSelectedDateAtIndex:(int)index forScrollView:(UIScrollView*)scrollView {
+    
+    if (scrollView.tag == ScrollViewTagValue_DAYS) {
+        _selectedDay = index + 1; // 1 to 31
+    } else if (scrollView.tag == ScrollViewTagValue_MONTHS) {
+        
+        _selectedMonth = index + 1; // 1 to 12
+        
+        // Updates days :
+        [self updateNumberOfDays];
+        
+    } else if (scrollView.tag == ScrollViewTagValue_YEARS) {
+        
+        _selectedYear = _minYear + index;
+        
+        // Updates days :
+        [self updateNumberOfDays];
+        
+    } else if (scrollView.tag == ScrollViewTagValue_HOURS) {
+        _selectedHour = index; // 0 to 23
+    } else if (scrollView.tag == ScrollViewTagValue_MINUTES) {
+        _selectedMinute = index; // 0 to 59
+    } else if (scrollView.tag == ScrollViewTagValue_SECONDS) {
+        _selectedSecond = index; // 0 to 59
+    } else if (scrollView.tag == ScrollViewTagValue_DATES) {
+        _selectedDate = index;
+    }
+}
+
+- (void)updateNumberOfDays {
+    
+    // Updates days :
+    NSDate *date = [self convertToDateDay:1 month:_selectedMonth year:_selectedYear hours:_selectedHour minutes:_selectedMinute seconds:_selectedSecond];
+    
+    if (!date) return;
+    
+    NSMutableArray *newDays = [self getDaysInMonth:date];
+    
+    if (newDays.count != _days.count) {
+        
+        _days = newDays;
+        
+        [self buildSelectorLabelsDays];
+        
+        if (_selectedDay > _days.count) {
+            _selectedDay = _days.count;
+        }
+        
+        [self highlightLabelInArray:_labelsDays atIndex:_selectedDay - 1];
+    }
+}
+
+- (int)getIndexForScrollViewPosition:(UIScrollView *)scrollView {
+    
+    CGFloat offsetContentScrollView = (scrollView.frame.size.height - kECDatePickerScrollViewItemHeight) / 2.0;
+    CGFloat offetY = scrollView.contentOffset.y;
+    CGFloat index = floorf((offetY + offsetContentScrollView) / kECDatePickerScrollViewItemHeight);
+    index = (index - 1);
+    return index;
+}
+
+- (void)setScrollView:(UIScrollView*)scrollView atIndex:(NSInteger)index animated:(BOOL)animated {
+    
+    if (!scrollView) return;
+    
+    if (animated) {
+        [UIView beginAnimations:@"ScrollViewAnimation" context:nil];
+        [UIView setAnimationDelegate:self];
+        [UIView setAnimationDuration:kECDatePickerAnimationDuration];
+        [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+    }
+    
+    scrollView.contentOffset = CGPointMake(0.0, (index * kECDatePickerScrollViewItemHeight));
+    
+    if (animated) {
+        [UIView commitAnimations];
+    }
+    
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(datePicker:dateDidChange:)]) {
+        [self.delegate datePicker:self dateDidChange:[self getDate]];
+    }
+}
+
+- (void)highlightLabelInArray:(NSMutableArray*)labels atIndex:(NSInteger)index {
+    if (!labels) return;
+    if (index > labels.count) return;
+    if (index < 0) return;
+    
+    for (int i = 0; i < labels.count; i++) {
+        UILabel *label = (UILabel *)[labels objectAtIndex:i];
+        if (i != index) {
+            label.textColor = self.tintColor;
+            label.font = kECDatePickerLabelFont;
+        } else {
+            label.textColor = self.highlightColor;
+            label.font = kECDatePickerLabelSelectedFont;
+        }
+    }
+}
+
+#pragma mark - Date
+
+- (void)setDate:(NSDate *)date animated:(BOOL)animated {
+    
+    if (!date) return;
+    NSDateComponents* components = [self.calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:date];
+    
+    _selectedDay = [components day];
+    _selectedMonth = [components month];
+    _selectedYear = [components year];
+    _selectedHour = [components hour];
+    /**
+     *  only show mininute 00 10 20 ~ 50 in hotel tour edit order for flight pick up
+     */
+    if (self.datePickerMode != ECDatePickerModeDateAndTime) {
+        _selectedMinute = [components minute];
+    }
+    _selectedSecond = [components second];
+    
+    if (self.datePickerMode == ECDatePickerModeDateAndTime) {
+        if (self.minimumDate) {
+            [self  setScrollView:_scrollViewDates atIndex:[date daysBetween:self.minimumDate] - 1 animated:animated];
+        } else {
+            [self setScrollView:_scrollViewDates atIndex:(_selectedDay - 1) animated:animated];
+        }
+        
+    }
+    
+    if (self.datePickerMode == ECDatePickerModeDate) {
+        [self setScrollView:_scrollViewYears atIndex:(_selectedYear - _minYear) animated:animated];
+        [self setScrollView:_scrollViewMonths atIndex:(_selectedMonth - 1) animated:animated];
+        [self setScrollView:_scrollViewDays atIndex:(_selectedDay - 1) animated:animated];
+        
+        
+    }
+    
+    if (self.datePickerMode == ECDatePickerModeTime || self.datePickerMode == ECDatePickerModeDateAndTime) {
+        [self setScrollView:_scrollViewHours atIndex:_selectedHour animated:animated];
+        [self setScrollView:_scrollViewMinutes atIndex:_selectedMinute animated:animated];
+        [self setScrollView:_scrollViewSeconds atIndex:_selectedSecond animated:animated];
+    }
+    
+    if (self.datePickerMode == ECDatePickerModeYearAndMonth) {
+        [self setScrollView:_scrollViewMonths atIndex:(_selectedMonth - 1) animated:animated];
+        [self setScrollView:_scrollViewYears atIndex:(_selectedYear - _minYear) animated:animated];
+    }
+    
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(datePicker:dateDidChange:)]) {
+        [self.delegate datePicker:self dateDidChange:[self getDate]];
+    }
+}
+
+- (NSDate*)convertToDateDay:(NSInteger)day month:(NSInteger)month year:(NSInteger)year hours:(NSInteger)hours minutes:(NSInteger)minutes seconds:(NSInteger)seconds {
+    
+    NSMutableString *dateString = [[NSMutableString alloc] init];
+    
+    NSDateFormatter *dateFormatter = self.dateFormatter;
+    if (self.timeZone) [dateFormatter setTimeZone:self.timeZone];
+    [dateFormatter setLocale:self.locale];
+    
+    // Date Mode :
+    if (self.datePickerMode == ECDatePickerModeDate) {
+        
+        if (day < 10) {
+            [dateString appendFormat:@"0%ld-", (long)day];
+        } else {
+            [dateString appendFormat:@"%ld-", (long)day];
+        }
+        
+        if (month < 10) {
+            [dateString appendFormat:@"0%ld-", (long)month];
+        } else {
+            [dateString appendFormat:@"%ld-", (long)month];
+        }
+        
+        [dateString appendFormat:@"%ld", (long)year];
+        
+        [dateFormatter setDateFormat:@"dd-MM-yyyy"];
+    }
+    
+    // Time Mode :
+    if (self.datePickerMode == ECDatePickerModeTime) {
+        
+        NSDateComponents* components = [self.calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:[NSDate date]];
+        
+        NSInteger nowDay = [components day];
+        NSInteger nowMonth = [components month];
+        NSInteger nowYear = [components year];
+        
+        if (nowDay < 10) {
+            [dateString appendFormat:@"0%ld-", (long)nowDay];
+        } else {
+            [dateString appendFormat:@"%ld-", (long)nowDay];
+        }
+        
+        if (nowMonth < 10) {
+            [dateString appendFormat:@"0%ld-", (long)nowMonth];
+        } else {
+            [dateString appendFormat:@"%ld-", (long)nowMonth];
+        }
+        
+        [dateString appendFormat:@"%ld", (long)nowYear];
+        
+        if (hours < 10) {
+            [dateString appendFormat:@" 0%ld:", (long)hours];
+        } else {
+            [dateString appendFormat:@" %ld:", (long)hours];
+        }
+        
+        if (minutes < 10) {
+            [dateString appendFormat:@"0%ld:", (long)minutes];
+        } else {
+            [dateString appendFormat:@"%ld:", (long)minutes];
+        }
+        
+        if (seconds < 10) {
+            [dateString appendFormat:@"0%ld", (long)seconds];
+        } else {
+            [dateString appendFormat:@"%ld", (long)seconds];
+        }
+        
+        [dateFormatter setDateFormat:@"dd-MM-yyyy HH:mm:ss"];
+    }
+    
+    // Date and Time Mode :
+    if (self.datePickerMode == ECDatePickerModeDateAndTime) {
+        
+        if (day < 10) {
+            [dateString appendFormat:@"0%ld-", (long)day];
+        } else {
+            [dateString appendFormat:@"%ld-", (long)day];
+        }
+        
+        if (month < 10) {
+            [dateString appendFormat:@"0%ld-", (long)month];
+        } else {
+            [dateString appendFormat:@"%ld-", (long)month];
+        }
+        
+        [dateString appendFormat:@"%ld", (long)year];
+        
+        if (hours < 10) {
+            [dateString appendFormat:@" 0%ld:", (long)hours];
+        } else {
+            [dateString appendFormat:@" %ld:", (long)hours];
+        }
+        
+        if (minutes < 10) {
+            [dateString appendFormat:@"0%ld:", (long)minutes];
+        } else {
+            [dateString appendFormat:@"%ld:", (long)minutes];
+        }
+        
+        [dateString appendString:@"00"];
+        
+        [dateFormatter setDateFormat:@"dd-MM-yyyy HH:mm:ss"];
+    }
+    
+    if (self.datePickerMode == ECDatePickerModeYearAndMonth) {
+        
+        if (month < 10) {
+            [dateString appendFormat:@"0%ld-", (long)month];
+        } else {
+            [dateString appendFormat:@"%ld-", (long)month];
+        }
+        
+        [dateString appendFormat:@"%ld", (long)year];
+        
+        [dateFormatter setDateFormat:@"MM-yyyy"];
+    }
+    
+    return [dateFormatter dateFromString:dateString];
+}
+
+- (NSDate*)convertToDate:(NSInteger)days hours:(NSInteger)hours minutes:(NSInteger)minutes seconds:(NSInteger)seconds {
+    
+    NSDate *date = [self.minimumDate dateByAddingDays:days];
+    
+    NSMutableString *dateString = [[NSMutableString alloc] initWithString:[date stringForFormat:@"dd-MM-yyyy"]];
+    
+    NSDateFormatter *dateFormatter = self.dateFormatter;
+    if (self.timeZone) [dateFormatter setTimeZone:self.timeZone];
+    [dateFormatter setLocale:self.locale];
+    
+    
+    if (hours < 10) {
+        [dateString appendFormat:@" 0%ld:", (long)hours];
+    } else {
+        [dateString appendFormat:@" %ld:", (long)hours];
+    }
+    /**
+     *  only show mininute 00 10 20 ~ 50 in hotel tour edit order for flight pick up
+     */
+    
+    if (!minutes) {
+        [dateString appendFormat:@"0%ld:", (long)minutes];
+    } else {
+        [dateString appendFormat:@"%ld:", (long)minutes * 10];
+    }
+    
+    [dateString appendString:@"00"];
+    
+    [dateFormatter setDateFormat:@"dd-MM-yyyy HH:mm:ss"];
+    return [dateFormatter dateFromString:dateString];
+}
+
+- (NSDate*)getDate {
+    if (self.datePickerMode == ECDatePickerModeDateAndTime) {
+        return [self convertToDate:_selectedDate hours:_selectedHour minutes:_selectedMinute seconds:_selectedSecond];
+    }
+    return [self convertToDateDay:_selectedDay month:_selectedMonth year:_selectedYear hours:_selectedHour minutes:_selectedMinute seconds:_selectedSecond];
+}
+
+#pragma mark - Getters and Setters
+
+- (UIView *)dimBackgroundView {
+    if(!_dimBackgroundView) {
+        _dimBackgroundView = [[UIView alloc] initWithFrame:self.superView.bounds];
+        [_dimBackgroundView setTranslatesAutoresizingMaskIntoConstraints:YES];
+        _dimBackgroundView.backgroundColor = [UIColor clearColor];
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismiss)];
+        [_dimBackgroundView addGestureRecognizer:tap];
+    }
+    return _dimBackgroundView;
+}
+
+- (UIView *)headerView {
+    if (!_headerView) {
+        _headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, kECDatePickerHeaderHeight)];
+        // Button Cancel
+        UIButton *cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(kECDatePickerPadding, 0.0, kECDatePickerButtonHeaderWidth, kECDatePickerHeaderHeight)];
+        [cancelButton setTitle:kCancelButtonItemTitle forState:UIControlStateNormal];
+        [cancelButton setTitleColor:self.tintColor forState:UIControlStateNormal];
+        [cancelButton addTarget:self action:@selector(actionButtonCancel:) forControlEvents:UIControlEventTouchUpInside];
+        [_headerView addSubview:cancelButton];
+        
+        // Button confirm
+        UIButton *sureButton = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width - kECDatePickerButtonHeaderWidth - kECDatePickerPadding, 0.0, kECDatePickerButtonHeaderWidth, kECDatePickerHeaderHeight)];
+        [sureButton setTitle:kSureButtonItemTitle forState:UIControlStateNormal];
+        [sureButton setTitleColor:self.highlightColor forState:UIControlStateNormal];
+        [sureButton addTarget:self action:@selector(actionButtonValid:) forControlEvents:UIControlEventTouchUpInside];
+        [_headerView addSubview:sureButton];
+        
+        // Label Title
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(cancelButton.frame) + kECDatePickerPadding, 0.0, self.frame.size.width - ((kECDatePickerButtonHeaderWidth + kECDatePickerPadding * 2) * 2 ), kECDatePickerHeaderHeight)];
+        _titleLabel.text = self.title;
+        _titleLabel.font = kECDatePickerTitleFont;
+        _titleLabel.textAlignment = NSTextAlignmentCenter;
+        _titleLabel.textColor = self.tintColor;
+        [_headerView addSubview:_titleLabel];
+    }
+    return _headerView;
+}
+
+- (NSDateFormatter *)dateFormatter {
+    if (!_dateFormatter) {
+        NSDateFormatter *dateFormatter = [NSDate shareDateFormatter];
+        _dateFormatter = dateFormatter;
+    }
+    _dateFormatter.dateFormat = kDateFormatYYYYMMDD;
+    return _dateFormatter;
+}
+
+- (NSCalendar *)calendar {
+    if (!_calendar) {
+        _calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _calendar.timeZone = self.timeZone;
+        _calendar.locale = self.locale;
+    }
+    return _calendar;
+}
+
+- (NSMutableArray *)months {
+    NSMutableArray *months = [[NSMutableArray alloc] init];
+    for (int monthNumber = 1; monthNumber <= 12; monthNumber++) {
+        NSString *dateString = [NSString stringWithFormat: @"%d", monthNumber];
+        NSDateFormatter* dateFormatter = self.dateFormatter;
+        if (self.timeZone) [dateFormatter setTimeZone:self.timeZone];
+        [dateFormatter setLocale:self.locale];
+        [dateFormatter setDateFormat:@"MM"];
+        NSDate* myDate = [dateFormatter dateFromString:dateString];
+        
+        NSDateFormatter *formatter = self.dateFormatter;
+        if (self.timeZone) [dateFormatter setTimeZone:self.timeZone];
+        [dateFormatter setLocale:self.locale];
+        [formatter setDateFormat:@"MMM"];
+        NSString *stringFromDate = [formatter stringFromDate:myDate];
+        
+        [months addObject:stringFromDate];
+    }
+    _months = months;
+    return _months;
+}
+
+- (NSMutableArray*)hours {
+    if (!_hours) {
+        NSMutableArray *hours = [[NSMutableArray alloc] init];
+        
+        for (int i = 0; i < 24; i++) {
+            if (i < 10) {
+                [hours addObject:[NSString stringWithFormat:@"0%d%@", i, @"时"]];
+            } else {
+                [hours addObject:[NSString stringWithFormat:@"%d%@", i, @"时"]];
+            }
+        }
+        _hours = hours;
+    }
+    return _hours;
+}
+
+- (NSMutableArray*)minutes {
+    if (!_minutes) {
+        NSMutableArray *minutes = [[NSMutableArray alloc] init];
+        /**
+         *  only show mininute 00 10 20 ~ 50 in hotel tour edit order for flight pick up
+         */
+        for (int i = 0; i < 6; i++) {
+            if (!i) {
+                [minutes addObject:[NSString stringWithFormat:@"%d0%@", i, @"分"]];
+            } else {
+                [minutes addObject:[NSString stringWithFormat:@"%d%@", i * 10, @"分"]];
+            }
+            
+        }
+        _minutes = minutes;
+    }
+    return _minutes;
+}
+
+- (NSMutableArray*)seconds {
+    if (!_seconds) {
+        
+        NSMutableArray *seconds = [[NSMutableArray alloc] init];
+        
+        for (int i = 0; i < 60; i++) {
+            if (i < 10) {
+                [seconds addObject:[NSString stringWithFormat:@"0%d", i]];
+            } else {
+                [seconds addObject:[NSString stringWithFormat:@"%d", i]];
+            }
+        }
+        _seconds = seconds;
+    }
+    return _seconds;
+}
+- (NSTimeZone *)timeZone {
+    if (!_timeZone) {
+        _timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    }
+    return _timeZone;
+}
+
+- (NSLocale *)locale {
+    if (!_locale) {
+        _locale = [NSLocale currentLocale];
+    }
+    return _locale;
+}
+
+- (void)setTintColor:(UIColor *)tintColor {
+    _tintColor = tintColor;
+    [self setupControl];
+}
+
+- (void)setHighlightColor:(UIColor *)highlightColor {
+    _highlightColor = highlightColor;
+    [self setupControl];
+}
+
+- (void)setMinimumDate:(NSDate*)date {
+    _minimumDate = date;
+    NSDateComponents* componentsMin = [self.calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:_minimumDate];
+    NSInteger yearMin = [componentsMin year];
+    _minYear = yearMin;
+    [self setupControl];
+}
+
+- (void)setMaximumDate:(NSDate*)date {
+    _maximumDate = date;
+    [self setupControl];
 }
 
 
