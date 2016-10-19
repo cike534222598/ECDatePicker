@@ -8,70 +8,75 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "NSDate+ECDatePicker.h"
 
+typedef NS_ENUM(NSInteger,ECDatePickerMode) {
+    ECDatePickerModeTime,    // Displays hour, minute, and optionally AM/PM designation depending on the locale setting (e.g. 6 | 53 | PM)
+    ECDatePickerModeDate,     // Displays month, day, and year depending on the locale setting (e.g. November | 15 | 2007)
+    ECDatePickerModeDateAndTime, // Displays date, hour, minute, and optionally AM/PM designation depending on the locale setting (e.g. Wed Nov 15 | 6 | 53 | PM)
+    ECDatePickerModeYearAndMonth // Displays Year, Month,  designation depending on the locale setting (e.g. November | 2007)
+};
 
+@class ECDatePicker;
 
-#pragma mark ------PROTOCOL------
-@protocol ECDatePickerDelegate <NSObject>
-
--(void)ECDatePickerDidConfirm:(NSString *)confirmString;
-
+@protocol ECDatePickerDelegate<NSObject>
+@optional
+- (void)datePicker:(ECDatePicker *)datePicker dateDidChange:(NSDate *)date;
+- (void)datePicker:(ECDatePicker *)datePicker didCancel:(UIButton *)sender;
+- (void)datePicker:(ECDatePicker *)datePicker didSelectedDate:(NSDate *)date;
 @end
 
+@interface ECDatePicker : UIControl
+/**
+ *  Title on the top of HooDatePicker
+ */
+@property (nonatomic, copy) NSString *title;
 
+@property (nonatomic, strong) NSDate *date;
+/**
+ *  specify min/max date range. default is nil. When min > max, the values are ignored.
+ */
+@property (nonatomic, strong) NSDate *minimumDate;
 
-#pragma mark ------PICKERSTYLE------
-typedef enum {
-    /**
-     *  只显示时间
-     */
-    ECTimeStyle = 0,
-    /**
-     *  只显示日期
-     */
-    ECDateStyle = 1,
-    /**
-     *  显示日期和时间
-     */
-    ECAllStyle = 2,
+@property (nonatomic, strong) NSDate *maximumDate;
+/**
+ * default is HooDatePickerModeDate. setting nil returns to default
+ */
+@property (nonatomic, assign) ECDatePickerMode datePickerMode;
+/**
+ *  default is [NSLocale currentLocale]. setting nil returns to default
+ */
+@property(nonatomic,strong) NSLocale      *locale;
+/**
+ *  default is [NSCalendar currentCalendar]. setting nil returns to default
+ */
+@property(nonatomic,copy)   NSCalendar    *calendar;
+/**
+ *   default is nil. use current time zone or time zone from calendar
+ */
+@property(nonatomic,strong) NSTimeZone    *timeZone;
+/**
+ *  read only property, indicate in datepicker is open.
+ */
+@property(nonatomic,readonly) BOOL        isOpen;
 
-} ECDatePickerStyle;
+@property (nonatomic, weak) id<ECDatePickerDelegate> delegate;
 
+- (instancetype)initWithSuperView:(UIView*)superView;
 
+- (instancetype)initDatePickerMode:(ECDatePickerMode)datePickerMode andAddToSuperView:(UIView *)superView;
 
-#pragma mark ------PICKER------
-@interface ECDatePicker : NSObject
-{
-    UIView *_baseView;                      //datePicker根视图
-    UIView *_datePickerView;                //datePicker背景
-    UIDatePicker *_datePicker;              //datePicker
-    UIButton *_dateConfirmButton;           //确定Button
-    UIButton *_dateCancleButton;            //取消Button
-    UIView *_maskView;                      //阴影View
-}
+- (instancetype)initDatePickerMode:(ECDatePickerMode)datePickerMode minDate:(NSDate *)minimumDate maxMamDate:(NSDate *)maximumDate  andAddToSuperView:(UIView *)superView;
 
-@property (nonatomic,unsafe_unretained) id <ECDatePickerDelegate> delegate;
+- (void)setDate:(NSDate *)date animated:(BOOL)animated;
 
-//是否可选择今天以前的时间,默认为YES
-@property (nonatomic,assign) BOOL isBeforeTime;
+- (void)setTintColor:(UIColor *)tintColor;
 
-//datePicker显示类别,分别为1=只显示时间,2=只显示日期，3=显示日期和时间(默认为3)
-@property (nonatomic,assign) ECDatePickerStyle theTypeOfDatePicker;
+- (void)setHighlightColor:(UIColor *)highlightColor;
 
-//默认显示时间
-@property (nonatomic, copy) NSDate *showDate;
+- (void)show;
 
+- (void)dismiss;
 
-#pragma mark ------ACTION------
--(id)initWithView:(UIView *)view delegate:(id<ECDatePickerDelegate>)delegate backColor:(UIColor *)backgroundColor buttonTitleColor:(UIColor *)titleColor pickerStyle:(ECDatePickerStyle)style;
-
-//设置pickerView不能早于date
-- (void)pickerViewBeforeTimeWithDate:(NSDate *)date;
-
-//出现
--(void)pushDatePicker;
-
-//消失
--(void)popDatePicker;
 
 @end
