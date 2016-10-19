@@ -7,19 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		044CF75BECAD9D62773DAFF3ADCBAC21 /* ECDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B32DB7AB404870638C141F5F8B66D33 /* ECDatePicker.m */; };
 		13505C528F70A8832401B6653FC5C36A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
-		40847DEA26ADD8B67EE674DD7250E24C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
+		43962E38E516340CC2F07D4C16710F21 /* ECDatePicker-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A0BF6FA7908A3FB0A144A7045D79A8CD /* ECDatePicker-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		510A8B58419B661FBED0B26F629257AC /* Pods-ECDatePicker_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D8225FA6035B3296F623546AE45494D /* Pods-ECDatePicker_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		67E43B48193ABF7F3FF84FB589095E02 /* NSDate+ECDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 42E5C8BF40497C5F60073B3E46491EEB /* NSDate+ECDatePicker.m */; };
-		7E32957D54C32E2CDEAE68616BFE29AA /* ECDatePicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C270A78B7D5857EB740A52A46441678 /* ECDatePicker-dummy.m */; };
-		87CFFD9A0E361DF6815A72B5BE04D311 /* ECDatePicker-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A0BF6FA7908A3FB0A144A7045D79A8CD /* ECDatePicker-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		88813E6DB80D232C9DE009EFCEF71E2D /* NSDate+ECDatePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C47B2CA96E698848A54888724A6BDE /* NSDate+ECDatePicker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8CF7266A8A3BEBD269A2DD391411CF6D /* ECDatePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F3AC5B228B43B19FABA7E230E3AB011 /* ECDatePicker.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9A5E26B2BA429C41F013635EE092F8E6 /* Pods-ECDatePicker_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A2089AD4279E937061FF1CA01C85C634 /* Pods-ECDatePicker_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A929B1A6D3BFE216C2702B7CA64B0C71 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
 		AF7EF836219A9D3DD0FBD76D634644C7 /* Pods-ECDatePicker_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 10F4DEC90983CCE586D7C7609AA7E7DE /* Pods-ECDatePicker_Example-dummy.m */; };
-		C1E331D05DDA724A1F3F83324EE454DC /* ECDatePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 373FC4D1D5B3A9D0F8E112B8250BF83A /* ECDatePicker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C505AA6692590FD00E65D0896056430B /* ECDatePicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C270A78B7D5857EB740A52A46441678 /* ECDatePicker-dummy.m */; };
 		D2CB7E7B3AAE3BD330539F0D1A45E85C /* Pods-ECDatePicker_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F6A6E1C276C174A7703998ADAB804FA /* Pods-ECDatePicker_Tests-dummy.m */; };
+		D2D5A56478544B8135688540032B5806 /* ECDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = F745E6C0800155CF38BE1BBB537187E5 /* ECDatePicker.m */; };
+		F4C0326F256D88B2CBF88F0D42B4D06F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,7 +25,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 7050F718673CDECE5EE60A2530012B10;
+			remoteGlobalIDString = 576906ACA5001112DFF540E1992F7827;
 			remoteInfo = ECDatePicker;
 		};
 /* End PBXContainerItemProxy section */
@@ -38,13 +36,10 @@
 		0AB113A8EBC9F8EF14E990E8DEC0BD10 /* Pods-ECDatePicker_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-ECDatePicker_Example.modulemap"; sourceTree = "<group>"; };
 		0F6A6E1C276C174A7703998ADAB804FA /* Pods-ECDatePicker_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-ECDatePicker_Tests-dummy.m"; sourceTree = "<group>"; };
 		10F4DEC90983CCE586D7C7609AA7E7DE /* Pods-ECDatePicker_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-ECDatePicker_Example-dummy.m"; sourceTree = "<group>"; };
-		1B32DB7AB404870638C141F5F8B66D33 /* ECDatePicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ECDatePicker.m; sourceTree = "<group>"; };
 		21AA3A16014593226B62CF7903D5EFB3 /* Pods-ECDatePicker_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-ECDatePicker_Tests.modulemap"; sourceTree = "<group>"; };
-		31C47B2CA96E698848A54888724A6BDE /* NSDate+ECDatePicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "NSDate+ECDatePicker.h"; sourceTree = "<group>"; };
 		343E8C82AC6A6F6BB9FF758236DFA3CD /* Pods-ECDatePicker_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-ECDatePicker_Example-frameworks.sh"; sourceTree = "<group>"; };
-		373FC4D1D5B3A9D0F8E112B8250BF83A /* ECDatePicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ECDatePicker.h; sourceTree = "<group>"; };
 		3ADE84C8708107A3B658193CED2D9A73 /* Pods-ECDatePicker_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-ECDatePicker_Example.release.xcconfig"; sourceTree = "<group>"; };
-		42E5C8BF40497C5F60073B3E46491EEB /* NSDate+ECDatePicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "NSDate+ECDatePicker.m"; sourceTree = "<group>"; };
+		3F3AC5B228B43B19FABA7E230E3AB011 /* ECDatePicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ECDatePicker.h; sourceTree = "<group>"; };
 		4D8225FA6035B3296F623546AE45494D /* Pods-ECDatePicker_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-ECDatePicker_Tests-umbrella.h"; sourceTree = "<group>"; };
 		5D78E1ED0FF7F2F96CD914845E828C9B /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		60E716EC5DBB3A39FCF676C4D08FB906 /* Pods-ECDatePicker_Tests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-ECDatePicker_Tests-resources.sh"; sourceTree = "<group>"; };
@@ -67,18 +62,11 @@
 		D77BF5F5D51F188DC326BFB3066871F8 /* Pods-ECDatePicker_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-ECDatePicker_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
 		D9371EA7DE3E5CBF9DAF2CB850F5AD37 /* Pods-ECDatePicker_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-ECDatePicker_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		DF47615CCABC1311DCF7D5DFC1A7FC16 /* ECDatePicker.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ECDatePicker.xcconfig; sourceTree = "<group>"; };
+		F745E6C0800155CF38BE1BBB537187E5 /* ECDatePicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ECDatePicker.m; sourceTree = "<group>"; };
 		FE292409598D303F80CD8F4BF40D2E84 /* Pods-ECDatePicker_Example-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-ECDatePicker_Example-resources.sh"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		68E91F24912CA2F128B4C8FE93BF28BA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				40847DEA26ADD8B67EE674DD7250E24C /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C1B74C523FA7376B34C23E908D6FAFA3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -92,6 +80,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				A929B1A6D3BFE216C2702B7CA64B0C71 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FB8C2FD9732C2D053A39CCAB0737A02E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4C0326F256D88B2CBF88F0D42B4D06F /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,18 +112,10 @@
 			path = "Target Support Files/Pods-ECDatePicker_Tests";
 			sourceTree = "<group>";
 		};
-		2C3E0611C3EC55F04D89B0D18D212A2A /* ECDatePicker */ = {
-			isa = PBXGroup;
-			children = (
-				88473021D6630F642A9AB48630EE75CF /* Classes */,
-			);
-			path = ECDatePicker;
-			sourceTree = "<group>";
-		};
 		32BA59B8DD77F8DE2832E7DC31BAF5D0 /* ECDatePicker */ = {
 			isa = PBXGroup;
 			children = (
-				2C3E0611C3EC55F04D89B0D18D212A2A /* ECDatePicker */,
+				8B3080137E5F3106B55789B646305DF9 /* ECDatePicker */,
 				63CAFB97C9F6716642105827EE2158E8 /* Support Files */,
 			);
 			name = ECDatePicker;
@@ -202,15 +190,12 @@
 			name = "Targets Support Files";
 			sourceTree = "<group>";
 		};
-		88473021D6630F642A9AB48630EE75CF /* Classes */ = {
+		8B3080137E5F3106B55789B646305DF9 /* ECDatePicker */ = {
 			isa = PBXGroup;
 			children = (
-				373FC4D1D5B3A9D0F8E112B8250BF83A /* ECDatePicker.h */,
-				1B32DB7AB404870638C141F5F8B66D33 /* ECDatePicker.m */,
-				31C47B2CA96E698848A54888724A6BDE /* NSDate+ECDatePicker.h */,
-				42E5C8BF40497C5F60073B3E46491EEB /* NSDate+ECDatePicker.m */,
+				E865B14CDDCA3ABF20EAE9298D0073F1 /* Classes */,
 			);
-			path = Classes;
+			path = ECDatePicker;
 			sourceTree = "<group>";
 		};
 		B65AEFCA09DADFBEA58811E7D13F4E57 /* Products */ = {
@@ -231,16 +216,24 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E865B14CDDCA3ABF20EAE9298D0073F1 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				3F3AC5B228B43B19FABA7E230E3AB011 /* ECDatePicker.h */,
+				F745E6C0800155CF38BE1BBB537187E5 /* ECDatePicker.m */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		372DCB5F841A4F49440B07D12B70FC2A /* Headers */ = {
+		48D0F0B0B110811910E9921CFAA48402 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87CFFD9A0E361DF6815A72B5BE04D311 /* ECDatePicker-umbrella.h in Headers */,
-				C1E331D05DDA724A1F3F83324EE454DC /* ECDatePicker.h in Headers */,
-				88813E6DB80D232C9DE009EFCEF71E2D /* NSDate+ECDatePicker.h in Headers */,
+				43962E38E516340CC2F07D4C16710F21 /* ECDatePicker-umbrella.h in Headers */,
+				8CF7266A8A3BEBD269A2DD391411CF6D /* ECDatePicker.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +256,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		576906ACA5001112DFF540E1992F7827 /* ECDatePicker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1E0074EAC83292E60ECE3D6CFBB1A817 /* Build configuration list for PBXNativeTarget "ECDatePicker" */;
+			buildPhases = (
+				2BEB01DFD7B334E64B7E952F497A4060 /* Sources */,
+				FB8C2FD9732C2D053A39CCAB0737A02E /* Frameworks */,
+				48D0F0B0B110811910E9921CFAA48402 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ECDatePicker;
+			productName = ECDatePicker;
+			productReference = CDBC3DA0EE0B409767DE2AD426C93C35 /* ECDatePicker.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		6B921D737E0F37599F91EE09112FA239 /* Pods-ECDatePicker_Tests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 386EA938AB859B91E796DAC31BC0D245 /* Build configuration list for PBXNativeTarget "Pods-ECDatePicker_Tests" */;
@@ -278,23 +288,6 @@
 			name = "Pods-ECDatePicker_Tests";
 			productName = "Pods-ECDatePicker_Tests";
 			productReference = D0C0F6B06B20C5A82E1E66897CB53975 /* Pods_ECDatePicker_Tests.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		7050F718673CDECE5EE60A2530012B10 /* ECDatePicker */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B6DEC8B36CE892313062D658FF5F59B1 /* Build configuration list for PBXNativeTarget "ECDatePicker" */;
-			buildPhases = (
-				DF4BCC55832A3A317EB0CC18C81AF214 /* Sources */,
-				68E91F24912CA2F128B4C8FE93BF28BA /* Frameworks */,
-				372DCB5F841A4F49440B07D12B70FC2A /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = ECDatePicker;
-			productName = ECDatePicker;
-			productReference = CDBC3DA0EE0B409767DE2AD426C93C35 /* ECDatePicker.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		A01C0D40B3C383EC54C34C5C11873911 /* Pods-ECDatePicker_Example */ = {
@@ -336,7 +329,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7050F718673CDECE5EE60A2530012B10 /* ECDatePicker */,
+				576906ACA5001112DFF540E1992F7827 /* ECDatePicker */,
 				A01C0D40B3C383EC54C34C5C11873911 /* Pods-ECDatePicker_Example */,
 				6B921D737E0F37599F91EE09112FA239 /* Pods-ECDatePicker_Tests */,
 			);
@@ -344,6 +337,15 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2BEB01DFD7B334E64B7E952F497A4060 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C505AA6692590FD00E65D0896056430B /* ECDatePicker-dummy.m in Sources */,
+				D2D5A56478544B8135688540032B5806 /* ECDatePicker.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		95705CAF41F6F1B973D81A0F2A0B1A04 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -360,23 +362,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DF4BCC55832A3A317EB0CC18C81AF214 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				7E32957D54C32E2CDEAE68616BFE29AA /* ECDatePicker-dummy.m in Sources */,
-				044CF75BECAD9D62773DAFF3ADCBAC21 /* ECDatePicker.m in Sources */,
-				67E43B48193ABF7F3FF84FB589095E02 /* NSDate+ECDatePicker.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
 		C0C5B54A5C51EAE983EDDA7B30AC0729 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ECDatePicker;
-			target = 7050F718673CDECE5EE60A2530012B10 /* ECDatePicker */;
+			target = 576906ACA5001112DFF540E1992F7827 /* ECDatePicker */;
 			targetProxy = D9048C438524CD696E1665FF4AE13841 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -486,6 +478,35 @@
 			};
 			name = Release;
 		};
+		749226BD89CB45DB7BAC11E7DA73B25E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DF47615CCABC1311DCF7D5DFC1A7FC16 /* ECDatePicker.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/ECDatePicker/ECDatePicker-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/ECDatePicker/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/ECDatePicker/ECDatePicker.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = ECDatePicker;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
 		76B463EC20DB3FD7CF15A8BC113283E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3ADE84C8708107A3B658193CED2D9A73 /* Pods-ECDatePicker_Example.release.xcconfig */;
@@ -519,35 +540,6 @@
 			};
 			name = Release;
 		};
-		A15DCF98627D06EB2A44F726BB68B847 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = DF47615CCABC1311DCF7D5DFC1A7FC16 /* ECDatePicker.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREFIX_HEADER = "Target Support Files/ECDatePicker/ECDatePicker-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/ECDatePicker/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/ECDatePicker/ECDatePicker.modulemap";
-				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_NAME = ECDatePicker;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
 		AFFDD2BAA1C0D1B8EDD376A13CD31E61 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A02CAE81E8BD38AAC291D03DD9A09B39 /* Pods-ECDatePicker_Example.debug.xcconfig */;
@@ -573,35 +565,6 @@
 				PODS_ROOT = "$(SRCROOT)";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = Pods_ECDatePicker_Example;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		CC1253C3AA1E68118A91A28660F642F0 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = DF47615CCABC1311DCF7D5DFC1A7FC16 /* ECDatePicker.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREFIX_HEADER = "Target Support Files/ECDatePicker/ECDatePicker-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/ECDatePicker/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/ECDatePicker/ECDatePicker.modulemap";
-				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_NAME = ECDatePicker;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -652,9 +615,47 @@
 			};
 			name = Debug;
 		};
+		E5B6F2D7916C926D1BAFBDEDB9EFCBE4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DF47615CCABC1311DCF7D5DFC1A7FC16 /* ECDatePicker.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/ECDatePicker/ECDatePicker-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/ECDatePicker/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/ECDatePicker/ECDatePicker.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = ECDatePicker;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1E0074EAC83292E60ECE3D6CFBB1A817 /* Build configuration list for PBXNativeTarget "ECDatePicker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				749226BD89CB45DB7BAC11E7DA73B25E /* Debug */,
+				E5B6F2D7916C926D1BAFBDEDB9EFCBE4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -678,15 +679,6 @@
 			buildConfigurations = (
 				AFFDD2BAA1C0D1B8EDD376A13CD31E61 /* Debug */,
 				76B463EC20DB3FD7CF15A8BC113283E2 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		B6DEC8B36CE892313062D658FF5F59B1 /* Build configuration list for PBXNativeTarget "ECDatePicker" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				CC1253C3AA1E68118A91A28660F642F0 /* Debug */,
-				A15DCF98627D06EB2A44F726BB68B847 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

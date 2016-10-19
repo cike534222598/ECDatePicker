@@ -28,38 +28,19 @@
 
 - (void)creatDatePicker
 {
-    NSDateFormatter *dateFormatter = [NSDate shareDateFormatter];
-    [dateFormatter setDateFormat:kDateFormatYYYYMMDD];
-    NSDate *maxDate = [dateFormatter dateFromString:@"2050-01-01"];
-    NSDate *minDate = [dateFormatter dateFromString:@"2016-01-01"];
+    self.datePicker = [[ECDatePicker alloc] initWithView:self.view delegate:self backColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:.7f] buttonTitleColor:[UIColor orangeColor] pickerStyle:ECAllStyle];
+}
 
-    self.datePicker = [[ECDatePicker alloc] initDatePickerMode:ECDatePickerModeYearAndMonth minDate:minDate maxMamDate:maxDate andAddToSuperView:self.view];
-    self.datePicker.delegate = self;
+
+- (void)ECDatePickerDidConfirm:(NSString *)confirmString
+{
+    self.dateLabel.text = confirmString;
 }
 
 
 - (IBAction)dateClick:(UIButton *)sender
 {
-    [self.datePicker show];
-}
-
-
-- (void)datePicker:(ECDatePicker *)datePicker didSelectedDate:(NSDate *)date
-{
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    
-    if (datePicker.datePickerMode == ECDatePickerModeDate) {
-        [dateFormatter setDateFormat:@"yyyy-MM-dd"];
-    } else if (datePicker.datePickerMode == ECDatePickerModeTime) {
-        [dateFormatter setDateFormat:@"HH:mm:ss"];
-    } else if (datePicker.datePickerMode == ECDatePickerModeYearAndMonth){
-        [dateFormatter setDateFormat:@"yyyy-MM"];
-    } else {
-        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    }
-    
-    NSString *value = [dateFormatter stringFromDate:date];
-    self.dateLabel.text = value;
+    [self.datePicker pushDatePicker];
 }
 
 

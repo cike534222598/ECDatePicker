@@ -1,15 +1,15 @@
 PODS:
-  - ECDatePicker (2.0.0)
+  - ECDatePicker (1.0.0)
 
 DEPENDENCIES:
   - ECDatePicker (from `../`)
 
 EXTERNAL SOURCES:
   ECDatePicker:
-    :path: "../"
+    :path: ../
 
 SPEC CHECKSUMS:
-  ECDatePicker: d7e8e2b85bc43b610162a02eee6dd1c5eb001337
+  ECDatePicker: fe1b7f61e0d05069f16a2905deec8b9478bf585d
 
 PODFILE CHECKSUM: af250486bc7668627074c88570eabfa5ac9c220d
 
