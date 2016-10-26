@@ -22,24 +22,25 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    [self creatDatePicker];
 }
 
 
 - (void)creatDatePicker
 {
     NSDateFormatter *dateFormatter = [NSDate shareDateFormatter];
-    [dateFormatter setDateFormat:kDateFormatYYYYMMDD];
-    NSDate *maxDate = [dateFormatter dateFromString:@"2050-01-01"];
-    NSDate *minDate = [dateFormatter dateFromString:@"2016-01-01"];
+    [dateFormatter setDateFormat:kDateFormatYYMMDDTHHmmss];
+    NSDate *maxDate = [dateFormatter dateFromString:@"2016-12-31T23:59:59"];
+    NSDate *minDate = [dateFormatter dateFromString:@"2016-01-01T00:00:01"];
     
-    self.datePicker = [[ECDatePicker alloc] initDatePickerMode:ECDatePickerModeYearAndMonth minDate:minDate maxMamDate:maxDate andAddToSuperView:self.view];
+    self.datePicker = [[ECDatePicker alloc] initDatePickerMode:ECDatePickerModeDateAndTime minDate:minDate maxMamDate:maxDate andAddToSuperView:self.view];
     self.datePicker.delegate = self;
 }
 
 
 - (IBAction)dateClick:(UIButton *)sender
 {
+    [self creatDatePicker];
+
     [self.datePicker show];
 }
 
