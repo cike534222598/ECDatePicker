@@ -28,6 +28,7 @@
 - (void)creatDatePicker
 {
     self.datePicker = [[ECDatePicker alloc] initWithView:self.view delegate:self backColor:[UIColor lightGrayColor] buttonTitleColor:[UIColor whiteColor] pickerStyle:ECAllStyle];
+    self.datePicker.isAfterTime = NO;
 }
 
 

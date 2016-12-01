@@ -50,10 +50,13 @@ typedef enum {
     UIView *_maskView;                      //阴影View
 }
 
-@property (nonatomic,unsafe_unretained) id <ECDatePickerDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id <ECDatePickerDelegate> delegate;
 
-//是否可选择今天以前的时间,默认为YES
-@property (nonatomic,assign) BOOL isBeforeTime;
+//是否可选择当前时间以前的时间,默认为YES
+@property (nonatomic, assign) BOOL isBeforeTime;
+
+//是否可以选择当前时间以后的时间,默认为YES
+@property (nonatomic, assign) BOOL isAfterTime;
 
 //datePicker显示类别,分别为1=只显示时间,2=只显示日期，3=显示日期和时间(默认为3)
 @property (nonatomic,assign) ECDatePickerStyle theTypeOfDatePicker;

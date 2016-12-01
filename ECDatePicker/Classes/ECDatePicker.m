@@ -19,6 +19,7 @@
         _baseView = view;
         _delegate = delegate;
         _isBeforeTime = YES;
+        _isAfterTime = YES;
         
         _maskView = [[UIView alloc] initWithFrame:_baseView.frame];
         _maskView.backgroundColor = [UIColor blackColor];
@@ -108,6 +109,18 @@
     }
     else{
         [_datePicker setMinimumDate:[NSDate dateWithTimeIntervalSince1970:0]];
+    }
+}
+
+
+//是否可选择以后的时间
+- (void)setIsAfterTime:(BOOL)isAfterTime
+{
+    if (isAfterTime == NO) {
+        [_datePicker setMaximumDate:[NSDate date]];
+    }
+    else{
+        [_datePicker setMaximumDate:nil];
     }
 }
 
